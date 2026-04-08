@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>62ª AG – Sistema de Gestão CNBB</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #1A5EA8;
+  --azul-escuro: #0E3D72;
+  --verde-medio: #3D7048;
+  --verde-escuro: #0D2E1A;
+  --amarelo: #F5F27A;
+  --menta: #6FF7C0;
+  --verde-claro: #D5F5CC;
+  --branco: #FFFFFF;
+  --cinza-claro: #F4F6F9;
+  --cinza: #6B7280;
+  --texto: #1A1A2E;
+  --borda: #E0E7EF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--cinza-claro);color:var(--texto);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:linear-gradient(90deg,var(--azul-escuro) 0%,var(--azul) 60%,var(--verde-medio) 100%);padding:0;display:flex;align-items:stretch;box-shadow:0 2px 12px rgba(0,0,0,0.18)}
+.header-logo{display:flex;align-items:center;gap:14px;padding:14px 24px;border-right:1px solid rgba(255,255,255,0.15)}
+.cross-icon{width:36px;height:36px;flex-shrink:0;position:relative}
+.cross-icon::before,.cross-icon::after{content:'';position:absolute;background:var(--amarelo);border-radius:2px}
+.cross-icon::before{width:8px;height:36px;left:14px;top:0}
+.cross-icon::after{width:36px;height:8px;left:0;top:14px}
+.header-text h1{font-family:'Merriweather',serif;font-size:1.05rem;font-weight:700;color:#fff;line-height:1.2}
+.header-text h1 span{color:var(--amarelo)}
+.header-text p{font-size:0.65rem;color:rgba(255,255,255,0.65);letter-spacing:0.12em;text-transform:uppercase;margin-top:2px}
+.header-info{display:flex;align-items:center;gap:20px;padding:0 24px;margin-left:auto}
+.header-badge{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 12px;text-align:center}
+.header-badge .num{font-size:1.5rem;font-weight:700;color:var(--amarelo);line-height:1}
+.header-badge .lbl{font-size:0.6rem;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.1em}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#6FF7C0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* NAV */
+nav{background:var(--azul-escuro);display:flex;padding:0 24px;border-bottom:2px solid var(--verde-medio)}
+.nav-item{padding:12px 18px;color:rgba(255,255,255,0.6);font-size:0.78rem;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;letter-spacing:0.03em;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05)}
+.nav-item.active{color:var(--amarelo);border-bottom-color:var(--amarelo)}
+.nav-item svg{width:14px;height:14px}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;min-height:0}
+
+/* SIDEBAR */
+.sidebar{width:280px;background:#fff;border-right:1px solid var(--borda);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.sidebar-header{padding:16px 18px;background:linear-gradient(135deg,var(--azul) 0%,var(--verde-medio) 100%);color:#fff}
+.sidebar-header h3{font-size:0.85rem;font-weight:600}
+.sidebar-header p{font-size:0.72rem;opacity:.75;margin-top:2px}
+.search-box{padding:12px;border-bottom:1px solid var(--borda)}
+.search-box input{width:100%;padding:8px 12px;border:1px solid var(--borda);border-radius:8px;font-size:0.8rem;font-family:'Montserrat',sans-serif;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--azul)}
+.category-tabs{display:flex;padding:8px 10px;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--borda)}
+.cat-tab{padding:4px 10px;border-radius:20px;font-size:0.68rem;font-weight:500;cursor:pointer;border:1px solid var(--borda);color:var(--cinza);transition:all .2s;white-space:nowrap}
+.cat-tab.active,.cat-tab:hover{background:var(--azul);color:#fff;border-color:var(--azul)}
+.list-container{flex:1;overflow-y:auto;padding:8px}
+.list-item{padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .2s;border:1px solid transparent;margin-bottom:3px}
+.list-item:hover{background:var(--cinza-claro);border-color:var(--borda)}
+.list-item.selected{background:#EBF3FF;border-color:var(--azul)}
+.list-item .name{font-size:0.8rem;font-weight:600;color:var(--texto)}
+.list-item .sub{font-size:0.7rem;color:var(--cinza);margin-top:2px}
+.list-item .tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:0.62rem;font-weight:600;margin-top:4px}
+.scrollbar-thin{scrollbar-width:thin;scrollbar-color:var(--borda) transparent}
+
+/* MAIN */
+main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* VIEWS */
+.view{display:none;flex:1;overflow:auto;padding:24px}
+.view.active{display:flex;flex-direction:column;gap:16px}
+
+/* STATS CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.stat-card{background:#fff;border-radius:12px;padding:16px;border:1px solid var(--borda);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.stat-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.stat-card.azul::before{background:var(--azul)}
+.stat-card.verde::before{background:var(--verde-medio)}
+.stat-card.amarelo::before{background:#E5B200}
+.stat-card.menta::before{background:#00A86B}
+.stat-card .s-num{font-size:2.2rem;font-weight:700;line-height:1;color:var(--texto)}
+.stat-card .s-lbl{font-size:0.7rem;color:var(--cinza);margin-top:4px;font-weight:500}
+.stat-card .s-icon{position:absolute;top:12px;right:12px;font-size:1.4rem;opacity:.2}
+
+/* TABLE */
+.table-wrap{background:#fff;border-radius:12px;border:1px solid var(--borda);overflow:hidden}
+.table-toolbar{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--borda);gap:12px;flex-wrap:wrap}
+.table-toolbar h3{font-size:0.88rem;font-weight:600;color:var(--texto)}
+.toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:7px 14px;border-radius:8px;font-size:0.75rem;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:5px;font-family:'Montserrat',sans-serif;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--azul);color:#fff}
+.btn-primary:hover{background:var(--azul-escuro)}
+.btn-verde{background:var(--verde-medio);color:#fff}
+.btn-verde:hover{background:var(--verde-escuro)}
+.btn-outline{background:#fff;color:var(--azul);border:1px solid var(--azul)}
+.btn-outline:hover{background:#EBF3FF}
+.btn-yellow{background:var(--amarelo);color:var(--azul-escuro)}
+.btn-yellow:hover{background:#E5E86A}
+.btn svg{width:13px;height:13px}
+table{width:100%;border-collapse:collapse}
+th{background:var(--cinza-claro);padding:10px 14px;text-align:left;font-size:0.7rem;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--borda)}
+td{padding:10px 14px;font-size:0.78rem;border-bottom:1px solid #F0F4F8;color:var(--texto)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F8FAFF}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.68rem;font-weight:600}
+.badge-azul{background:#DBEAFE;color:var(--azul)}
+.badge-verde{background:#D1FAE5;color:var(--verde-escuro)}
+.badge-amarelo{background:#FEF3C7;color:#92400E}
+.badge-cinza{background:#F3F4F6;color:#4B5563}
+.badge-vermelho{background:#FEE2E2;color:#991B1B}
+.obs-text{font-size:0.7rem;color:var(--cinza);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* CHART */
+.chart-section{background:#fff;border-radius:12px;border:1px solid var(--borda);padding:20px}
+.chart-section h3{font-size:0.88rem;font-weight:600;margin-bottom:16px;color:var(--texto)}
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:12px}
+.bar-label{min-width:130px;font-size:0.75rem;color:var(--cinza);text-align:right}
+.bar-track{flex:1;height:22px;background:var(--cinza-claro);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:0.68rem;font-weight:600;color:#fff;transition:width .6s ease;min-width:30px}
+.bar-count{min-width:30px;font-size:0.75rem;font-weight:600;color:var(--texto)}
+
+/* CHAT */
+#view-chat{padding:0}
+.chat-layout{display:flex;flex:1;overflow:hidden}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;background:#F9FAFB}
+.msg{display:flex;gap:10px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+.av.ai{background:linear-gradient(135deg,var(--azul),var(--verde-medio));color:#fff}
+.av.user{background:var(--amarelo);color:var(--azul-escuro)}
+.bubble{max-width:68%;padding:10px 14px;border-radius:12px;font-size:.82rem;line-height:1.6}
+.msg.ai .bubble{background:#fff;border:1px solid var(--borda);border-radius:4px 12px 12px 12px;color:var(--texto)}
+.msg.user .bubble{background:var(--azul);color:#fff;border-radius:12px 4px 12px 12px}
+.bubble strong{color:var(--azul)}
+.msg.user .bubble strong{color:var(--amarelo)}
+.bubble ul{padding-left:16px;margin-top:4px}
+.bubble li{margin-bottom:3px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--azul);display:inline-block;animation:bounce 1.2s infinite;margin:0 2px}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+.chat-input-area{padding:14px 18px;background:#fff;border-top:1px solid var(--borda);display:flex;gap:10px;align-items:flex-end}
+.chip-area{padding:8px 18px 0;display:flex;gap:6px;flex-wrap:wrap;background:#fff}
+.chip{padding:4px 11px;border-radius:20px;font-size:.72rem;font-weight:500;cursor:pointer;border:1px solid var(--azul);color:var(--azul);background:#EBF3FF;transition:all .2s;white-space:nowrap}
+.chip:hover{background:var(--azul);color:#fff}
+#msg-input{flex:1;background:var(--cinza-claro);border:1px solid var(--borda);border-radius:10px;padding:10px 14px;font-size:.82rem;font-family:'Montserrat',sans-serif;resize:none;min-height:42px;max-height:100px;outline:none;transition:border-color .2s;color:var(--texto)}
+#msg-input:focus{border-color:var(--azul);background:#fff}
+.send-btn{width:42px;height:42px;background:var(--azul);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.send-btn:hover{background:var(--azul-escuro);transform:scale(1.05)}
+.send-btn svg{width:18px;height:18px;color:#fff}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:24px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-header h3{font-size:1rem;font-weight:700;color:var(--azul-escuro)}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--cinza);font-size:1.2rem;padding:4px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:.73rem;font-weight:600;color:var(--cinza);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:.83rem;font-family:'Montserrat',sans-serif;outline:none;transition:border-color .2s;color:var(--texto)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--azul)}
+.form-group textarea{resize:vertical;min-height:60px}
+.form-row{display:flex;gap:12px}
+.form-row .form-group{flex:1}
+.modal-btns{display:flex;gap:10px;margin-top:18px;justify-content:flex-end}
+.scrollbar-thin::-webkit-scrollbar{width:5px}
+.scrollbar-thin::-webkit-scrollbar-track{background:transparent}
+.scrollbar-thin::-webkit-scrollbar-thumb{background:var(--borda);border-radius:3px}
+
+/* DETAIL PANEL */
+.detail-panel{width:320px;background:#fff;border-left:1px solid var(--borda);display:none;flex-direction:column;overflow:hidden}
+.detail-panel.open{display:flex}
+.detail-header{padding:16px;background:linear-gradient(135deg,var(--azul) 0%,var(--verde-medio) 100%);color:#fff}
+.detail-header .dh-name{font-size:.88rem;font-weight:700;line-height:1.3}
+.detail-header .dh-role{font-size:.72rem;opacity:.8;margin-top:3px}
+.detail-body{padding:16px;overflow-y:auto;flex:1}
+.detail-field{margin-bottom:12px}
+.detail-field .df-label{font-size:.65rem;font-weight:600;color:var(--cinza);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.detail-field .df-value{font-size:.8rem;color:var(--texto)}
+.detail-obs{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px;font-size:.75rem;color:#92400E;line-height:1.5;margin-top:8px}
+
+/* AVISO */
+.aviso-editor{background:#fff;border-radius:12px;border:1px solid var(--borda);overflow:hidden}
+.aviso-toolbar{padding:14px 18px;border-bottom:1px solid var(--borda);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.aviso-content{padding:18px;min-height:200px;font-size:.85rem;line-height:1.7;outline:none;color:var(--texto)}
+.aviso-content[contenteditable="true"]:empty::before{content:'O texto do aviso aparecerá aqui...';color:var(--cinza);font-style:italic}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;gap:6px;padding:12px 18px;border-top:1px solid var(--borda);background:#fff}
+.page-info{font-size:.75rem;color:var(--cinza);margin-right:auto}
+.page-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--borda);background:#fff;cursor:pointer;font-size:.75rem;color:var(--cinza);transition:all .2s}
+.page-btn:hover,.page-btn.active{background:var(--azul);color:#fff;border-color:var(--azul)}
+.page-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* REGIONAL FILTER */
+.filter-bar{background:#fff;border-radius:10px;border:1px solid var(--borda);padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filter-bar label{font-size:.73rem;font-weight:600;color:var(--cinza)}
+.filter-bar select{padding:6px 10px;border:1px solid var(--borda);border-radius:8px;font-size:.78rem;font-family:'Montserrat',sans-serif;outline:none;color:var(--texto)}
+.filter-bar select:focus{border-color:var(--azul)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-logo">
+    <div class="cross-icon"></div>
+    <div class="header-text">
+      <h1><span>62ª</span> Assembleia Geral dos Bispos do Brasil</h1>
+      <p>CNBB · 15 – 24 Abr 2026 · Aparecida – SP</p>
+    </div>
+  </div>
+  <div class="header-info">
+    <div class="header-badge" id="hb-total"><div class="num" id="total-count">–</div><div class="lbl">Total</div></div>
+    <div class="header-badge" id="hb-bispos"><div class="num" id="bispos-count">–</div><div class="lbl">Bispos</div></div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:rgba(255,255,255,.7)">
+      <div class="status-dot"></div> Sistema ativo
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-item active" onclick="switchView('dashboard',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Painel Geral
+  </div>
+  <div class="nav-item" onclick="switchView('inscritos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Inscritos
+  </div>
+  <div class="nav-item" onclick="switchView('avisos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Criar Aviso
+  </div>
+  <div class="nav-item" onclick="switchView('relatorio',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Relatório
+  </div>
+  <div class="nav-item" onclick="switchView('assistente',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    Assistente IA
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Participantes</h3>
+      <p id="side-count">Carregando…</p>
+    </div>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="🔍 Buscar nome, diocese…" oninput="filterList()">
+    </div>
+    <div class="category-tabs">
+      <div class="cat-tab active" onclick="setCategory('todos',this)">Todos</div>
+      <div class="cat-tab" onclick="setCategory('bispos_titulares',this)">Titulares</div>
+      <div class="cat-tab" onclick="setCategory('bispos_emeritos',this)">Eméritos</div>
+      <div class="cat-tab" onclick="setCategory('assessores',this)">Assessores</div>
+      <div class="cat-tab" onclick="setCategory('colaboradores',this)">Colaboradores</div>
+      <div class="cat-tab" onclick="setCategory('convidados',this)">Convidados</div>
+      <div class="cat-tab" onclick="setCategory('secretarios',this)">Secretários</div>
+    </div>
+    <div class="list-container scrollbar-thin" id="side-list"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="chart-section">
+          <h3>Bispos por Regional (Titulares + Eméritos)</h3>
+          <div class="bar-chart" id="chart-regional"></div>
+        </div>
+        <div class="chart-section">
+          <h3>Distribuição por Categoria</h3>
+          <div class="bar-chart" id="chart-cat"></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <h3>Observações pendentes de atenção</h3>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="obs-table">
+            <thead><tr><th>Nome</th><th>Categoria</th><th>Observação</th></tr></thead>
+            <tbody id="obs-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSCRITOS -->
+    <div class="view" id="view-inscritos">
+      <div class="filter-bar">
+        <label>Categoria:</label>
+        <select id="cat-filter" onchange="renderTable()">
+          <option value="todos">Todas as categorias</option>
+          <option value="bispos_titulares">Bispos Titulares</option>
+          <option value="bispos_emeritos">Bispos Eméritos</option>
+          <option value="adm_diocesano">Adm. Diocesano</option>
+          <option value="secretarios">Secretários-Executivos</option>
+          <option value="assessores">Assessores</option>
+          <option value="convidados">Convidados</option>
+          <option value="colaboradores">Colaboradores</option>
+          <option value="instituicoes">Instituições</option>
+        </select>
+        <label>Regional:</label>
+        <select id="reg-filter" onchange="renderTable()">
+          <option value="">Todos os regionais</option>
+        </select>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-primary" onclick="openAddModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Inscrito
+          </button>
+          <button class="btn btn-verde" onclick="exportExcel()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar Excel
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap" style="flex:1">
+        <div class="table-toolbar">
+          <h3 id="table-title">Todos os inscritos</h3>
+          <span id="table-count" style="font-size:.75rem;color:var(--cinza)"></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Nome</th><th>Função/Vínculo</th><th>Diocese/Instituição</th><th>Regional</th><th>Observação</th>
+              </tr>
+            </thead>
+            <tbody id="main-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <!-- AVISOS -->
+    <div class="view" id="view-avisos">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+        <div>
+          <div class="chart-section" style="margin-bottom:16px">
+            <h3 style="margin-bottom:14px">Gerar Aviso com IA</h3>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="form-group" style="margin:0">
+                <label>Tipo de aviso</label>
+                <select id="aviso-tipo" style="width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:.82rem;font-family:'Montserrat',sans-serif;outline:none">
+                  <option value="confirmacao">Confirmação de inscrição</option>
+                  <option value="lembrete">Lembrete de chegada</option>
+                  <option value="programacao">Envio de programação</option>
+                  <option value="translado">Informação sobre translado</option>
+                  <option value="hospedagem">Informações de hospedagem</option>
+                  <option value="livre">Aviso livre</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label>Destinatário (opcional)</label>
+                <input type="text" id="aviso-dest" placeholder="Ex: Dom João Silva ou 'todos os bispos'">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label>Instruções adicionais</label>
+                <textarea id="aviso-instrucoes" style="width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:.82rem;font-family:'Montserrat',sans-serif;resize:vertical;min-height:70px;outline:none" placeholder="Ex: Mencionar que o translado sai às 14h..."></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="gerarAviso()" id="btn-gerar" style="width:100%;justify-content:center;padding:10px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Gerar com IA
+              </button>
+            </div>
+          </div>
+          <div class="chart-section">
+            <h3 style="margin-bottom:10px">Modelos rápidos</h3>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="btn btn-outline" onclick="loadTemplate('chegada')" style="justify-content:flex-start">📅 Aviso de chegada e credenciamento</button>
+              <button class="btn btn-outline" onclick="loadTemplate('translado')" style="justify-content:flex-start">🚌 Informações de translado</button>
+              <button class="btn btn-outline" onclick="loadTemplate('hospedagem')" style="justify-content:flex-start">🏨 Confirmação de hospedagem</button>
+              <button class="btn btn-outline" onclick="loadTemplate('programacao')" style="justify-content:flex-start">📋 Programação geral da AG</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="aviso-editor">
+            <div class="aviso-toolbar">
+              <span style="font-size:.75rem;font-weight:600;color:var(--cinza)">AVISO:</span>
+              <button class="btn btn-yellow" onclick="copyAviso()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copiar
+              </button>
+              <button class="btn btn-outline" onclick="clearAviso()">Limpar</button>
+              <div id="aviso-typing" style="display:none;margin-left:auto">
+                <div class="typing"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+            <div class="aviso-content scrollbar-thin" id="aviso-output" contenteditable="true" style="max-height:420px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RELATORIO -->
+    <div class="view" id="view-relatorio">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-verde" onclick="exportExcel('todos')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar todos (.xlsx)
+        </button>
+        <button class="btn btn-outline" onclick="exportExcel('bispos_titulares')">Bispos Titulares</button>
+        <button class="btn btn-outline" onclick="exportExcel('bispos_emeritos')">Bispos Eméritos</button>
+        <button class="btn btn-outline" onclick="exportExcel('colaboradores')">Colaboradores</button>
+        <button class="btn btn-outline" onclick="exportExcel('obs')">Com Observações</button>
+      </div>
+      <div class="stats-grid" id="rel-stats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="chart-section">
+          <h3>Por Regional (Titulares + Eméritos)</h3>
+          <div class="bar-chart" id="rel-chart-reg"></div>
+        </div>
+        <div class="chart-section">
+          <h3>Por Função (Titulares)</h3>
+          <div class="bar-chart" id="rel-chart-func"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSISTENTE -->
+    <div class="view" id="view-assistente" style="padding:0">
+      <div class="chat-layout">
+        <div style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+          <div class="chip-area" id="chips"></div>
+          <div class="chat-messages scrollbar-thin" id="chat-msgs"></div>
+          <div class="chat-input-area">
+            <textarea id="msg-input" rows="1" placeholder="Pergunte sobre inscritos, estatísticas, logística…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMsg()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel scrollbar-thin" id="detail-panel">
+    <div class="detail-header">
+      <div class="dh-name" id="dp-name"></div>
+      <div class="dh-role" id="dp-role"></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-field"><div class="df-label">Diocese / Instituição</div><div class="df-value" id="dp-diocese"></div></div>
+      <div class="detail-field"><div class="df-label">Regional</div><div class="df-value" id="dp-reg"></div></div>
+      <div class="detail-field"><div class="df-label">Categoria</div><div class="df-value" id="dp-cat"></div></div>
+      <div class="detail-field" id="dp-obs-field" style="display:none">
+        <div class="df-label">Observação</div>
+        <div class="detail-obs" id="dp-obs"></div>
+      </div>
+      <button class="btn btn-outline" onclick="closeDetail()" style="margin-top:12px;width:100%;justify-content:center">Fechar</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL NOVO INSCRITO -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Novo Inscrito</h3>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Nome completo *</label><input type="text" id="f-nome" placeholder="Nome completo"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Categoria *</label>
+        <select id="f-cat">
+          <option value="bispos_titulares">Bispo Titular</option>
+          <option value="bispos_emeritos">Bispo Emérito</option>
+          <option value="adm_diocesano">Adm. Diocesano</option>
+          <option value="secretarios">Secretário-Executivo</option>
+          <option value="assessores">Assessor</option>
+          <option value="convidados">Convidado</option>
+          <option value="colaboradores">Colaborador</option>
+          <option value="instituicoes">Instituição</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Função/Vínculo</label><input type="text" id="f-vinc" placeholder="Arcebispo, Bispo, Colaborador…"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Diocese/Instituição</label><input type="text" id="f-diocese"></div>
+      <div class="form-group"><label>Regional</label>
+        <select id="f-reg">
+          <option value="">Selecione</option>
+          <option>Norte 1</option><option>Norte 2</option><option>Norte 3</option>
+          <option>Nordeste 1</option><option>Nordeste 2</option><option>Nordeste 3</option>
+          <option>Nordeste 4</option><option>Nordeste 5</option>
+          <option>Leste 1</option><option>Leste 2</option><option>Leste 3</option>
+          <option>Centro-Oeste</option><option>Noroeste</option>
+          <option>Oeste 1</option><option>Oeste 2</option>
+          <option>Sul 1</option><option>Sul 2</option><option>Sul 3</option><option>Sul 4</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Observações</label><textarea id="f-obs" placeholder="Necessidades especiais, transporte, hospedagem…"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeAddModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNewItem()">Salvar inscrição</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DADOS ────────────────────────────────────────────────────────────
+const DB = {"bispos_titulares":[{"nome":"Cardeal Paulo Cezar Costa","vinculacao":"Arcebispo","diocese":"de Brasília - DF","regional":"Centro-Oeste","observacao":"Na volta eles vão precisar do traslado das 14h."},{"nome":"Dom João Justino de Medeiros Silva","vinculacao":"Arcebispo","diocese":"de Goiânia - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Marcony Vinícius Ferreira","vinculacao":"Arcebispo","diocese":"do Ordinariado Militar do Brasil","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Adair José Guimarães","vinculacao":"Bispo","diocese":"de Formosa - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Francisco Agamenilton Damascena","vinculacao":"Bispo","diocese":"de Luziânia - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Giovani Carlos Caldas Barroca","vinculacao":"Bispo","diocese":"de Uruaçu - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Jeová Elias Ferreira","vinculacao":"Bispo","diocese":"de Goiás - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Joaquim Carlos Carvalho, OSB","vinculacao":"Bispo","diocese":"de Jataí - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom José Aparecido Gonçalves de Almeida","vinculacao":"Bispo","diocese":"de Itumbiara - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom José Francisco Rodrigues do Rêgo","vinculacao":"Bispo","diocese":"de Ipameri - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Lindomar Rocha Mota","vinculacao":"Bispo","diocese":"de São Luís de Montes Belos - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Waldemar Passini Dalbello","vinculacao":"Bispo","diocese":"de Anápolis - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Antonio Aparecido De Marcos Filho","vinculacao":"Bispo Auxiliar","diocese":"de Brasília - DF","regional":"Centro-Oeste","observacao":"Na volta eles vão precisar do traslado das 14h."},{"nome":"Dom Danival Milagres Coelho","vinculacao":"Bispo Auxiliar","diocese":"de Goiânia - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Denilson Geraldo, SAC","vinculacao":"Bispo Auxiliar","diocese":"de Brasília - DF","regional":"Centro-Oeste","observacao":"Na volta eles vão precisar do traslado das 14h."},{"nome":"Dom José Francisco Falcão de Barros","vinculacao":"Bispo Auxiliar","diocese":"do Ordinariado Militar do Brasil","regional":"Centro-Oeste","observacao":"Necessitará de translado apenas de retorno para o aeroporto de Guarulhos."},{"nome":"Dom José Roberto dos Reis, CP","vinculacao":"Bispo Auxiliar","diocese":"de Goiânia - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Ricardo Hoepers","vinculacao":"Bispo Auxiliar","diocese":"de Brasília - DF","regional":"Centro-Oeste","observacao":"Permanece no hotel/Casa dos Redentoristas até o dia 28  de abril."},{"nome":"Dom Vicente de Paula Tavares","vinculacao":"Bispo Auxiliar","diocese":"de Brasília - DF","regional":"Centro-Oeste","observacao":"Na volta eles vão precisar do traslado das 14h."},{"nome":"Cardeal Orani João Tempesta, OCist","vinculacao":"Arcebispo","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Antonio Luiz Catelan Ferreira","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Célio da Silveira Calixto Filho","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Fernando Arêas Rifan","vinculacao":"Bispo","diocese":"da Administração Apostólica Pessoal São João Maria Vianney - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom George Khoury","vinculacao":"Eparca","diocese":"Eparquia Nossa Senhora do Paraíso Greco-Melquita Católica do Brasil","regional":"Leste 1","observacao":""},{"nome":"Dom Geraldo de Paula Souza, CSsR","vinculacao":"Bispo Auxiliar","diocese":"de Niterói - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Gilson Andrade da Silva","vinculacao":"Bispo","diocese":"de Nova Iguaçu - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Hiansen Vieira Franco","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Joel Portella Amado","vinculacao":"Bispo","diocese":"de Petrópolis - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom José Francisco Rezende Dias","vinculacao":"Arcebispo","diocese":"de Niterói - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom José Maria Pereira","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Joselito Ramalho Nogueira","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Luiz Henrique da Silva Brito","vinculacao":"Bispo","diocese":"de Barra do Piraí-Volta Redonda - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Nelson Francelino Ferreira","vinculacao":"Bispo","diocese":"de Valença - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Paulo Celso Dias do Nascimento","vinculacao":"Bispo","diocese":"de Itaguaí - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Pedro Cunha Cruz","vinculacao":"Bispo","diocese":"de Nova Friburgo - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Roberto Francisco Ferrería Paz","vinculacao":"Bispo","diocese":"de Campos - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Roque Costa Souza","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Tarcisio Nascentes dos Santos","vinculacao":"Bispo","diocese":"de Duque de Caxias - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Zdzislaw Stanislaw Blaszczyk (Tiago)","vinculacao":"Bispo Auxiliar","diocese":"de São Sebastião do Rio de Janeiro - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Airton José dos Santos","vinculacao":"Arcebispo","diocese":"de Mariana - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Antônio Carlos Félix","vinculacao":"Bispo","diocese":"de Governador Valadares - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Antônio Carlos Paiva","vinculacao":"Bispo Coadjutor","diocese":"de Oliveira - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Claudio Nori Sturm, OFMCap","vinculacao":"Bispo","diocese":"de Patos de Minas - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Darci José Nicioli, CSsR","vinculacao":"Arcebispo","diocese":"de Diamantina - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Dorival Souza Barreto Júnior","vinculacao":"Bispo","diocese":"de Januária - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Edmar José da Silva","vinculacao":"Bispo Auxiliar","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Edson José Oriolo dos Santos","vinculacao":"Bispo","diocese":"de Leopoldina - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Evandro Campos Maria","vinculacao":"Bispo Auxiliar","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Francisco Cota de Oliveira","vinculacao":"Bispo","diocese":"de Sete Lagoas - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Geovane Luís da Silva","vinculacao":"Bispo","diocese":"de Divinópolis - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Geraldo dos Reis Maia","vinculacao":"Bispo","diocese":"de Araçuaí - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Joel Maria dos Santos","vinculacao":"Bispo Auxiliar","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Jorge Alves Bezerra, SSS","vinculacao":"Bispo","diocese":"de Paracatu - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Aristeu Vieira","vinculacao":"Bispo","diocese":"de Luz - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Carlos de Souza Campos","vinculacao":"Arcebispo","diocese":"de Montes Claros - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Eudes Campos do Nascimento","vinculacao":"Bispo","diocese":"de São João del Rei - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Hamilton de Castro","vinculacao":"Bispo","diocese":"de Almenara - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Lanza Neto","vinculacao":"Bispo","diocese":"de Guaxupé - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Luiz Majella Delgado, CSsR","vinculacao":"Arcebispo","diocese":"de Pouso Alegre - MG","regional":"Leste 2","observacao":""},{"nome":"Dom José Otácio Oliveira Guedes","vinculacao":"Bispo Auxiliar","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Juarez Delorto Secco","vinculacao":"Bispo","diocese":"de Caratinga - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Júlio César Gomes Moreira","vinculacao":"Bispo Auxiliar","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Marco Aurélio Gubiotti","vinculacao":"Arcebispo","diocese":"de Juiz de Fora - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Messias dos Reis Silveira","vinculacao":"Bispo","diocese":"de Teófilo Otoni - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Miguel Ângelo Freitas Ribeiro","vinculacao":"Bispo","diocese":"de Oliveira - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Nivaldo dos Santos Ferreira","vinculacao":"Bispo Auxiliar","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Otacilio Ferreira de Lacerda","vinculacao":"Bispo","diocese":"de Guanhães - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Paulo Francisco Machado","vinculacao":"Bispo","diocese":"de Uberlândia - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Paulo Mendes Peixoto","vinculacao":"Arcebispo","diocese":"de Uberaba - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Roberto José da Silva","vinculacao":"Bispo","diocese":"de Janaúba - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Valter Magno de Carvalho","vinculacao":"Bispo","diocese":"de Ituiutaba - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Walmor Oliveira de Azevedo","vinculacao":"Arcebispo","diocese":"de Belo Horizonte - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Walter Jorge Pinto","vinculacao":"Bispo","diocese":"de Campanha - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Ângelo Ademir Mezzari, RCJ","vinculacao":"Arcebispo","diocese":"de Vitória do Espírito Santo - ES","regional":"Leste 3","observacao":""},{"nome":"Dom Luiz Fernando Lisboa, CP","vinculacao":"Arcebispo","diocese":"de Cachoeiro de Itapemirim - ES","regional":"Leste 3","observacao":""},{"nome":"Dom Lauro Sérgio Versiani Barbosa","vinculacao":"Bispo","diocese":"de Colatina - ES","regional":"Leste 3","observacao":""},{"nome":"Dom Paulo Bosi Dal ’Bó","vinculacao":"Bispo","diocese":"de São Mateus - ES","regional":"Leste 3","observacao":""},{"nome":"Dom Andherson Franklin Lustoza de Souza","vinculacao":"Bispo Auxiliar","diocese":"de Vitória do Espírito Santo - ES","regional":"Leste 3","observacao":""},{"nome":"Dom Ailton Menegussi","vinculacao":"Bispo","diocese":"de Crateús - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom André Vital Félix da Silva, SCJ","vinculacao":"Bispo","diocese":"de Limoeiro do Norte - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Antônio Carlos do Nascimento","vinculacao":"Bispo Auxiliar","diocese":"de Fortaleza - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Aurélio Pinto de Sousa","vinculacao":"Bispo","diocese":"de Quixadá - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Francisco Edimilson Neves Ferreira","vinculacao":"Bispo","diocese":"de Tianguá - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Geraldo Freire Soares, CSsR","vinculacao":"Bispo","diocese":"de Iguatu - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Gregório Ben Lâmed Paixão, OSB","vinculacao":"Arcebispo","diocese":"de Fortaleza - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Jânison de Sá Santos","vinculacao":"Bispo Auxiliar","diocese":"de Fortaleza - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom José Luiz Gomes de Vasconcelos","vinculacao":"Bispo","diocese":"de Sobral - CE","regional":"Nordeste 1","observacao":"Meu voo chega às 16h, em Guarulhos, e precisarei de translado para Aparecida. Gostaria de um contato para que possamos dialogar pessoalmente sobre o assunto.  Localizador: SPYSBB"},{"nome":"Dom Luís Gonzaga Silva Pepeu, OFMCap","vinculacao":"Arcebispo","diocese":"Baturité - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Magnus Henrique Lopes, OFMCap","vinculacao":"Bispo","diocese":"de Crato - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Rosalvo Cordeiro de Lima","vinculacao":"Bispo","diocese":"de Itapipoca - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Agnaldo Temóteo da Silveira","vinculacao":"Bispo","diocese":"de Garanhuns - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Alcivan Tadeus Gomes de Araújo","vinculacao":"Bispo Auxiliar","diocese":"da Paraíba - PB","regional":"Nordeste 2","observacao":""},{"nome":"Dom Antonio Carlos Cruz Santos, MSC","vinculacao":"Bispo","diocese":"de Petrolina - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Antônio Ranis Rosendo dos Santos, C.Ss.R.","vinculacao":"Bispo","diocese":"de Caicó - RN","regional":"Nordeste 2","observacao":""},{"nome":"Dom Carlos Alberto Breis Pereira, OFM","vinculacao":"Arcebispo","diocese":"de Maceió - AL","regional":"Nordeste 2","observacao":""},{"nome":"Dom Dulcênio Fontes de Matos","vinculacao":"Bispo","diocese":"de Campina Grande - PB","regional":"Nordeste 2","observacao":"O voo de retorno será as 14:05, portanto a nossa saída da Asembleia exige de transporte na parte da manhã por aproximadamente as 10:00 h."},{"nome":"Dom Eraldo Bispo da Silva","vinculacao":"Bispo","diocese":"de Patos - PB","regional":"Nordeste 2","observacao":""},{"nome":"Dom Fernando Barbosa dos Santos, CM","vinculacao":"Bispo","diocese":"de Palmares - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Francisco de Assis Dantas de Lucena","vinculacao":"Bispo","diocese":"de Nazaré - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Francisco de Assis Gabriel dos Santos, CSsR","vinculacao":"Bispo","diocese":"de Cajazeiras - PB","regional":"Nordeste 2","observacao":""},{"nome":"Dom Francisco de Sales Alencar Batista, OCarm","vinculacao":"Bispo","diocese":"de Mossoró - RN","regional":"Nordeste 2","observacao":""},{"nome":"Dom Gabriele Marchesi","vinculacao":"Bispo","diocese":"de Floresta - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom João Santos Cardoso","vinculacao":"Arcebispo","diocese":"de Natal - RN","regional":"Nordeste 2","observacao":""},{"nome":"Dom José Luiz Ferreira Salles, CSsR","vinculacao":"Bispo","diocese":"de Pesqueira - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom José Ruy Gonçalves Lopes, OFMCap","vinculacao":"Bispo","diocese":"de Caruaru - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom José Silvio de Brito","vinculacao":"Bispo Auxiliar","diocese":"de Natal - RN","regional":"Nordeste 2","observacao":""},{"nome":"Dom José Vicente Pinto de Alencar da Silva","vinculacao":"Bispo","diocese":"de Salgueiro - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Josivaldo José Bezerra","vinculacao":"Bispo Auxiliar","diocese":"de Olinda e Recife - PE","regional":"Nordeste 2","observacao":"Irá no onibus com os colaboradores, e a reserva do hotel iniciando em 13/04."},{"nome":"Dom Limacêdo Antonio da Silva","vinculacao":"Bispo","diocese":"de Afogados da Ingazeira - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Manoel de Oliveira Soares Filho","vinculacao":"Bispo","diocese":"de Palmeira dos Índios - AL","regional":"Nordeste 2","observacao":""},{"nome":"Dom Manoel Delson Pedreira da Cruz, OFMCap","vinculacao":"Arcebispo","diocese":"da Paraíba - PB","regional":"Nordeste 2","observacao":""},{"nome":"Dom Nereudo Freire Henrique","vinculacao":"Bispo Auxiliar","diocese":"de Olinda e Recife - PE","regional":"Nordeste 2","observacao":"Irá no onibus com os colaboradores, e a reserva do hotel iniciando em 13/04."},{"nome":"Dom Paulo Jackson Nóbrega de Sousa","vinculacao":"Arcebispo","diocese":"de Olinda e Recife - PE","regional":"Nordeste 2","observacao":"Irá no onibus com os colaboradores, e a reserva do hotel iniciando em 13/04."},{"nome":"Dom Valdemir Ferreira dos Santos","vinculacao":"Bispo","diocese":"de Penedo - AL","regional":"Nordeste 2","observacao":""},{"nome":"Cardeal Sergio da Rocha","vinculacao":"Arcebispo","diocese":"de São Salvador da Bahia - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Aldemiro Sena dos Santos","vinculacao":"Bispo","diocese":"de Teixeira de Freitas - Caravelas - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Antonio Ederaldo de Santana","vinculacao":"Bispo","diocese":"de Irecê - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Antonio Tourinho Neto","vinculacao":"Bispo","diocese":"de Cruz das Almas - BA","regional":"Nordeste 3","observacao":"Na ida o voo de Dom Antonio Tourinho Neto chegará em Guarulhos às 14h35min - Na volta o voo sairá às 18h30min"},{"nome":"Dom Dirceu de Oliveira Medeiros","vinculacao":"Bispo","diocese":"de Camaçari - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Estevam dos Santos Silva Filho","vinculacao":"Bispo","diocese":"de Ruy Barbosa - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Francisco de Oliveira Vidal","vinculacao":"Bispo","diocese":"de Alagoinhas - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Gabriel dos Santos Filho","vinculacao":"Bispo Auxiliar","diocese":"de São Salvador da Bahia - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom George Luis Amaral Muniz","vinculacao":"Bispo","diocese":"de Propriá - SE","regional":"Nordeste 3","observacao":""},{"nome":"Dom Gilvan Pereira Rodrigues","vinculacao":"Bispo Auxiliar","diocese":"de São Salvador da Bahia - BA","regional":"Nordeste 3","observacao":"De preferência reservar o quarto indididual"},{"nome":"Dom Giovanni Crippa, IMC","vinculacao":"Bispo","diocese":"de Ilhéus - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Guido Zendron","vinculacao":"Bispo","diocese":"de Paulo Afonso - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Hélio Pereira dos Santos","vinculacao":"Bispo","diocese":"de Serrinha - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Hernaldo Pinto Farias, SSS","vinculacao":"Bispo","diocese":"de Bonfim - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Jailton de Oliveira Lino, PSDP","vinculacao":"Bispo","diocese":"de Itabuna - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Jefferson Santos Pinheiro","vinculacao":"Bispo Auxiliar eleito","diocese":"de Aracaju - SE","regional":"Nordeste 3","observacao":""},{"nome":"Dom João Batista Alves do Nascimento, CSsR","vinculacao":"Bispo","diocese":"de Barra - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Josafá Menezes da Silva","vinculacao":"Arcebispo","diocese":"de Aracaju - SE","regional":"Nordeste 3","observacao":""},{"nome":"Dom José Edson Santana Oliveira","vinculacao":"Bispo","diocese":"de Eunápolis - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom José Genivaldo Garcia","vinculacao":"Bispo","diocese":"de Estância - SE","regional":"Nordeste 3","observacao":""},{"nome":"Dom José Roberto Silva Carvalho","vinculacao":"Bispo","diocese":"de Caetité - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Juraci Gomes de Oliveira","vinculacao":"Bispo","diocese":"de Amargosa - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Moacir Silva Arantes","vinculacao":"Bispo","diocese":"de Barreiras - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Paulo Romeu Dantas Bastos","vinculacao":"Bispo","diocese":"de Jequié - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Rubival Cabral Britto, OFMCap","vinculacao":"Bispo","diocese":"de Bom Jesus da Lapa - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Valdemir Vicente Andrade Santos","vinculacao":"Bispo","diocese":"de Juazeiro - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Vicente de Paula Ferreira, CSsR","vinculacao":"Bispo","diocese":"de Livramento de Nossa Senhora - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Vitor Agnaldo de Menezes","vinculacao":"Arcebispo","diocese":"de Vitória da Conquista - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Zanoni Demettino Castro","vinculacao":"Arcebispo","diocese":"de Feira de Santana - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Benedito Araújo","vinculacao":"Bispo","diocese":"de Campo Maior - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Edilson Soares Nobre","vinculacao":"Bispo","diocese":"de Oeiras - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Edivalter Andrade","vinculacao":"Bispo","diocese":"de Parnaíba - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Juarez Marques Sousa da Silva","vinculacao":"Arcebispo","diocese":"de Teresina - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Júlio César Souza de Jesus","vinculacao":"Bispo","diocese":"de Floriano - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Marcos Antonio Tavoni","vinculacao":"Bispo","diocese":"de Bom Jesus do Gurguéia - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Plínio José Luz da Silva","vinculacao":"Bispo","diocese":"de Picos - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Ronilton Souza de Araújo, SCJ","vinculacao":"Bispo","diocese":"de São Raimundo Nonato - PI","regional":"Nordeste 4","observacao":""},{"nome":"Dom Armando Martín Gutiérrez, FAM","vinculacao":"Bispo","diocese":"de Bacabal - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Elio Rama, IMC","vinculacao":"Bispo","diocese":"de Pinheiro - MA","regional":"Nordeste 5","observacao":"Se possível, me deixem no primeiro andar, num quarto ao lado do meu emérito, Dom Ricardo Paglia. Obrigado!"},{"nome":"Dom Evaldo Carvalho dos Santos, CM","vinculacao":"Bispo","diocese":"de Viana - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Francisco Lima Soares","vinculacao":"Bispo","diocese":"de Carolina - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Gilberto Pastana de Oliveira","vinculacao":"Arcebispo","diocese":"de São Luís do Maranhão - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Giuseppe Luigi Spiga","vinculacao":"Bispo","diocese":"de Grajaú - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Jan Kot, OMI","vinculacao":"Bispo","diocese":"de Zé Doca - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom José Valdeci Santos Mendes","vinculacao":"Bispo","diocese":"de Brejo - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Sebastião Bandeira Coêlho","vinculacao":"Bispo","diocese":"de Coroatá - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Sebastião Lima Duarte","vinculacao":"Bispo","diocese":"de Caxias do Maranhão - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Valentim Fagundes de Meneses, MSC","vinculacao":"Bispo","diocese":"de Balsas - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Vilsom Basso, SCJ","vinculacao":"Bispo","diocese":"de Imperatriz - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Roque Paloschi","vinculacao":"Arcebispo","diocese":"de Porto Velho - RO","regional":"Noroeste","observacao":""},{"nome":"Dom Antônio Fontinele de Melo","vinculacao":"Bispo","diocese":"de Humaitá - AM","regional":"Noroeste","observacao":""},{"nome":"Dom Flávio Giovenale, SDB","vinculacao":"Bispo","diocese":"de Cruzeiro do Sul - AC","regional":"Noroeste","observacao":""},{"nome":"Dom Joaquín Pertiñez Fernández, OAR","vinculacao":"Bispo","diocese":"de Rio Branco - AC","regional":"Noroeste","observacao":""},{"nome":"Dom Norbert Hans Christoph Foerster, SVD","vinculacao":"Bispo","diocese":"de Ji-Paraná - RO","regional":"Noroeste","observacao":""},{"nome":"Dom Santiago Sánchez Sebastián, OAR","vinculacao":"Bispo Prelado","diocese":"de Lábrea - AM","regional":"Noroeste","observacao":""},{"nome":"Cardeal Leonardo Ulrich Steiner, OFM","vinculacao":"Arcebispo","diocese":"de Manaus - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Adolfo Zon Pereira, SX","vinculacao":"Bispo","diocese":"de Alto Solimões - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Edmilson Tadeu Canavarros dos Santos, SDB","vinculacao":"Bispo","diocese":"de Itacoatiara - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Evaristo Pascoal Spengler, OFM","vinculacao":"Bispo","diocese":"de Roraima - RR","regional":"Norte 1","observacao":""},{"nome":"Dom Joaquim Hudson de Souza Ribeiro","vinculacao":"Bispo Auxiliar","diocese":"de Manaus - AM","regional":"Norte 1","observacao":""},{"nome":"Dom José Albuquerque de Araújo","vinculacao":"Bispo","diocese":"de Parintins - AM","regional":"Norte 1","observacao":""},{"nome":"Dom José Altevir da Silva, CSSp","vinculacao":"Bispo Prelado","diocese":"de Tefé - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Marcos Marian Piatek, CSsR","vinculacao":"Bispo","diocese":"de Coari - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Raimundo Vanthuy Neto","vinculacao":"Bispo","diocese":"de São Gabriel da Cachoeira - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Samuel Ferreira de Lima, OFM","vinculacao":"Bispo Auxiliar","diocese":"de Manaus - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Zenildo Lima da Silva","vinculacao":"Bispo Auxiliar","diocese":"de Manaus - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Zenildo Luiz Pereira da Silva, CSsR","vinculacao":"Bispo","diocese":"de Borba - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Antônio de Assis Ribeiro, SDB","vinculacao":"Bispo","diocese":"de Macapá - AP","regional":"Norte 2","observacao":"Não vou precisar de transporte de Guarulhos para Aparecida.  Só na volta irei precisar,  ou seja, de Aparecida para Guarulhos."},{"nome":"Dom Bernardo Johannes Bahlmann, OFM","vinculacao":"Bispo","diocese":"de Óbidos - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Irineu Roman, CSJ","vinculacao":"Arcebispo","diocese":"de Santarém - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Ivanildo Oliveira Almeida","vinculacao":"Bispo","diocese":"de Cametá - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Jesús María López Mauleón, OAR","vinculacao":"Bispo Prelado","diocese":"Alto Xingu-Tucumã - PA","regional":"Norte 2","observacao":""},{"nome":"Dom João Muniz Alves, OFM","vinculacao":"Bispo","diocese":"de Xingu-Altamira - PA","regional":"Norte 2","observacao":""},{"nome":"Dom José Ionilton Lisboa de Oliveira, SDV","vinculacao":"Bispo Prelado","diocese":"de Marajó - PA","regional":"Norte 2","observacao":""},{"nome":"Dom José Maria Chaves dos Reis","vinculacao":"Bispo","diocese":"de Abaetetuba - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Julio Endi Akamine, SAC","vinculacao":"Arcebispo","diocese":"de Belém do Pará - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Paulo Andreolli, SX","vinculacao":"Bispo Auxiliar","diocese":"de Belém do Pará - PA","regional":"Norte 2","observacao":"vou precisar somente do transporte de Aparecida para Guarulhos; Guarulhos - Aparecisa já tenho carona com a fazenda da esperança (preenchi porque era obrigatório sendo que eu vou precisar do retorno)"},{"nome":"Dom Raimundo Possidônio Carrera da Mata","vinculacao":"Bispo","diocese":"de Bragança do Pará - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Vital Corbellini","vinculacao":"Bispo","diocese":"de Marabá - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Wilmar Santin, OCarm","vinculacao":"Bispo Prelado","diocese":"de Itaituba - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Carlos Henrique Silva Oliveira","vinculacao":"Bispo","diocese":"de Tocantinópolis - TO","regional":"Norte 3","observacao":""},{"nome":"Dom Dominique Marie Jean Denis You","vinculacao":"Bispo","diocese":"de Santíssima Conceição do Araguaia - PA","regional":"Norte 3","observacao":"Na volta, no dia 24 de abril, precisarei estar em GRU para um voo saindo às 12h55. Chegando pelo menos uma hora antes!"},{"nome":"Dom Giovane Pereira de Melo","vinculacao":"Bispo","diocese":"Araguaina-TO","regional":"Norte 3","observacao":""},{"nome":"Dom José Moreira da Silva","vinculacao":"Bispo","diocese":"de Porto Nacional - TO","regional":"Norte 3","observacao":""},{"nome":"Dom Lucio Nicoletto","vinculacao":"Bispo Prelado","diocese":"de São Félix - MT","regional":"Norte 3","observacao":""},{"nome":"Dom Pedro Brito Guimarães","vinculacao":"Arcebispo","diocese":"de Palmas - TO","regional":"Norte 3","observacao":""},{"nome":"Dom Philip Dickmans","vinculacao":"Bispo","diocese":"de Miracema do Tocantins - TO","regional":"Norte 3","observacao":""},{"nome":"Dom Wellington de Queiroz Vieira","vinculacao":"Bispo","diocese":"de Cristalândia - TO","regional":"Norte 3","observacao":""},{"nome":"Dom Dimas Lara Barbosa","vinculacao":"Arcebispo","diocese":"de Campo Grande - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom Ettore Dotti, CSF","vinculacao":"Bispo","diocese":"de Naviraí - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom Henrique Aparecido de Lima, CSsR","vinculacao":"Bispo","diocese":"de Dourados - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom João Batista de Oliveira, SVD","vinculacao":"Bispo","diocese":"de Corumbá - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom Luiz Gonçalves Knupp","vinculacao":"Bispo","diocese":"de Três Lagoas - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom Otair Nicoletti","vinculacao":"Bispo","diocese":"de Coxim - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom Pedro Cesario Palma, OFMCap","vinculacao":"Bispo","diocese":"de Jardim - MS","regional":"Oeste 1","observacao":""},{"nome":"Dom Canísio Klaus","vinculacao":"Bispo","diocese":"de Sinop - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom Jacy Diniz Rocha","vinculacao":"Bispo","diocese":"de São Luiz de Cáceres - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom João Aparecido Bergamasco, SAC","vinculacao":"Bispo","diocese":"de Primavera do Leste - Paranatinga - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom Maurício da Silva Jardim","vinculacao":"Bispo","diocese":"de Rondonópolis-Guiratinga - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom Neri José Tondello","vinculacao":"Bispo","diocese":"de Juína - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom Paulo Renato Fernandes Gonçalves de Campos","vinculacao":"Bispo","diocese":"de Barra do Garças - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom Vital Chitolina, SCJ","vinculacao":"Bispo","diocese":"de Diamantino - MT","regional":"Oeste 2","observacao":""},{"nome":"Cardeal Odilo Pedro Scherer","vinculacao":"Arcebispo","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Antônio Emídio Vilar, SDB","vinculacao":"Arcebispo","diocese":"de São José do Rio Preto - SP","regional":"Sul 1","observacao":""},{"nome":"Dom João Inácio Müller, OFM","vinculacao":"Arcebispo","diocese":"de Campinas - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Roberto Fortes Palau","vinculacao":"Arcebispo","diocese":"de Sorocaba - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Mário Antônio da Silva","vinculacao":"Arcebispo","diocese":"de Aparecida - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Moacir Silva","vinculacao":"Arcebispo","diocese":"de Ribeirão Preto - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Algacir Munhak, CS","vinculacao":"Bispo","diocese":"de São Miguel Paulista - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Argemiro de Azevedo, CMF","vinculacao":"Bispo","diocese":"de Assis - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Arnaldo Carvalheiro Neto","vinculacao":"Bispo","diocese":"de Jundiaí - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Benedito Gonçalves dos Santos","vinculacao":"Bispo","diocese":"de Presidente Prudente - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Devair Araújo da Fonseca","vinculacao":"Bispo","diocese":"de Piracicaba - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Edmilson Amador Caetano, OCist","vinculacao":"Bispo","diocese":"de Guarulhos - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Eduardo Malaspina","vinculacao":"Bispo","diocese":"de Itapeva - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Eduardo Pinheiro da Silva, SDB","vinculacao":"Bispo","diocese":"de Jaboticabal - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Eduardo Vieira dos Santos","vinculacao":"Bispo","diocese":"de Ourinhos - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Eugênio Barbosa Martins, SSS","vinculacao":"Bispo","diocese":"de São João da Boa Vista - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Francisco Carlos da Silva","vinculacao":"Bispo","diocese":"Jaú - SP","regional":"Sul 1","observacao":""},{"nome":"Dom João Bosco Barbosa de Sousa, OFM","vinculacao":"Bispo","diocese":"de Osasco - SP","regional":"Sul 1","observacao":""},{"nome":"Dom João Gilberto de Moura","vinculacao":"Bispo","diocese":"de Lins - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Joaquim Giovani Mol Guimarães","vinculacao":"Bispo","diocese":"de Santos - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Joaquim Wladimir Lopes Dias","vinculacao":"Bispo","diocese":"de Lorena - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Benedito Cardoso","vinculacao":"Bispo","diocese":"de Catanduva - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Carlos Chacorowski, CM","vinculacao":"Bispo","diocese":"de Caraguatatuba - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Negri, PIME","vinculacao":"Bispo","diocese":"de Santo Amaro - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Reginaldo Andrietta","vinculacao":"Bispo","diocese":"de Jales - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Valmor Cesar Teixeira, SDB","vinculacao":"Bispo","diocese":"de São José dos Campos - SP","regional":"Sul 1","observacao":"Quarto individual"},{"nome":"Dom Luiz Antônio Cipolini","vinculacao":"Bispo","diocese":"de Marília - SP","regional":"Sul 1","observacao":"Por favor reservar quartos até o 3º Andar."},{"nome":"Dom Luiz Antônio Lopes Ricci","vinculacao":"Bispo","diocese":"de Itapetininga - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Luiz Carlos Dias","vinculacao":"Bispo","diocese":"de São Carlos - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Luiz Gonzaga Fechio","vinculacao":"Bispo","diocese":"de Amparo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Manoel Ferreira dos Santos Júnior, MSC","vinculacao":"Bispo","diocese":"de Registro - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Milton Kenan Júnior","vinculacao":"Bispo","diocese":"de Barretos - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Moacir Aparecido de Freitas","vinculacao":"Bispo","diocese":"de Votuporanga - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Paulo Roberto Beloto","vinculacao":"Bispo","diocese":"de Franca - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Pedro Carlos Cipolini","vinculacao":"Bispo","diocese":"de Santo André - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Pedro Luiz Stringhini","vinculacao":"Bispo","diocese":"de Mogi das Cruzes - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Rubens Sevilha, OCD","vinculacao":"Bispo","diocese":"de Bauru - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Sérgio Aparecido Colombo","vinculacao":"Bispo","diocese":"de Bragança Paulista - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Sergio Krzywy","vinculacao":"Bispo","diocese":"de Araçatuba - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Valdir José de Castro, SSP","vinculacao":"Bispo","diocese":"de Campo Limpo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Wilson Luís Angotti Filho","vinculacao":"Bispo","diocese":"de Taubaté - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Carlos Lema Garcia","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Frei Carlos Silva, OFMCap","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Celso Alexandre","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Cícero Alves de França","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Edilson de Souza Silva","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Marcelo Antônio da Silva","vinculacao":"Bispo Auxiliar","diocese":"de Santo Amaro - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Márcio Antonio Vidal de Negreiros, OSA","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Rogério Augusto das Neves","vinculacao":"Bispo Auxiliar","diocese":"de São Paulo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Edgard Amine Madi","vinculacao":"Eparca","diocese":"de Nossa Senhora do Líbano em São Paulo dos Maronitas","regional":"Sul 1","observacao":""},{"nome":"Dom Geremias Steinmetz","vinculacao":"Arcebispo","diocese":"de Londrina - PR","regional":"Sul 2","observacao":""},{"nome":"Dom José Antonio Peruzzo","vinculacao":"Arcebispo","diocese":"de Curitiba - PR","regional":"Sul 2","observacao":""},{"nome":"Dom José Mário Scalon Angonese","vinculacao":"Arcebispo","diocese":"de Cascavel - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Severino Clasen, OFM","vinculacao":"Arcebispo","diocese":"de Maringá - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Volodemer Koubetch, OSBM","vinculacao":"Arcieparca Metropolitano","diocese":"de Metropolia Católica Ucraniana São João Batista","regional":"Sul 2","observacao":""},{"nome":"Dom Amilton Manoel da Silva, CP","vinculacao":"Bispo","diocese":"de Guarapuava - PR","regional":"Sul 2","observacao":"Gostaria de solicitar um quarto individual no Hotel Rainha do Brasil. Irei e voltarei de ônibus."},{"nome":"Dom Antônio Braz Benevente","vinculacao":"Bispo","diocese":"de Jacarezinho - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Bruno Elizeu Versari","vinculacao":"Bispo","diocese":"de Ponta Grossa - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Carlos José de Oliveira","vinculacao":"Bispo","diocese":"de Apucarana - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Celso Antônio Marchiori","vinculacao":"Bispo","diocese":"de São José dos Pinhais - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Edgar Xavier Ertl, SAC","vinculacao":"Bispo","diocese":"de Palmas-Francisco Beltrão - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Evandro Luis Braun","vinculacao":"Bispo","diocese":"de Campo Mourão - PR","regional":"Sul 2","observacao":""},{"nome":"Dom João Carlos Seneme, CSS","vinculacao":"Bispo","diocese":"de Toledo - PR","regional":"Sul 2","observacao":""},{"nome":"Dom João Mamede Filho, OFMConv","vinculacao":"Bispo","diocese":"de Umuarama - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Marcos José dos Santos","vinculacao":"Bispo","diocese":"de Cornélio Procópio - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Mário Spaki","vinculacao":"Bispo","diocese":"de Paranavaí - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Paulo Alves Romão","vinculacao":"Bispo","diocese":"de Paranaguá - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Sergio de Deus Borges","vinculacao":"Bispo","diocese":"de Foz do Iguaçu - PR","regional":"Sul 2","observacao":"Meu voo no retorno será à noite, assim posso ir em ônibus em período mais tarde, não precisamente as 14h00."},{"nome":"Dom Adenis Roberto de Oliveira, SdP","vinculacao":"Bispo Auxiliar","diocese":"de Curitiba - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Reginei José Modolo","vinculacao":"Bispo Auxiliar","diocese":"de Curitiba - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Meron Mazur, OSBM","vinculacao":"Eparca","diocese":"da Imaculada Conceição de Rito Ucraniano","regional":"Sul 2","observacao":""},{"nome":"Dom Jacinto Bergmann","vinculacao":"Arcebispo","diocese":"de Pelotas - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Jaime Spengler","vinculacao":"Arcebispo","diocese":"de Porto Alegre - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Leomar Antônio Brustolin","vinculacao":"Arcebispo","diocese":"de Santa Maria - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Rodolfo Luís Weber","vinculacao":"Arcebispo","diocese":"de Passo Fundo - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Adimir Antonio Mazali","vinculacao":"Bispo","diocese":"de Erexim - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Antônio Carlos Rossi Keller","vinculacao":"Bispo","diocese":"de Frederico Westphalen - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Carlos Rômulo Gonçalves e Silva","vinculacao":"Bispo","diocese":"de Montenegro - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Cleonir Paulo Dalbosco, OFMCap","vinculacao":"Bispo","diocese":"de Bagé - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Clesio Facco, SAC","vinculacao":"Bispo","diocese":"de Uruguaiana - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Edson Batista de Mello","vinculacao":"Bispo","diocese":"de Cachoeira do Sul - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Itacir Brassiani, MSF","vinculacao":"Bispo","diocese":"de Santa Cruz do Sul - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Jaime Pedro Kohl, PSDP","vinculacao":"Bispo","diocese":"de Osório - RS","regional":"Sul 3","observacao":""},{"nome":"Dom João Francisco Salm","vinculacao":"Bispo","diocese":"de Novo Hamburgo - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Jorge Pierozan","vinculacao":"Bispo","diocese":"de Rio Grande - RS","regional":"Sul 3","observacao":""},{"nome":"Dom José Gislon, OFMCap","vinculacao":"Bispo","diocese":"de Caxias do Sul - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Liro Vendelino Meurer","vinculacao":"Bispo","diocese":"de Santo Ângelo - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Nélio Domingos Zortea","vinculacao":"Bispo","diocese":"de Cruz Alta - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Sílvio Guterres Dutra","vinculacao":"Bispo","diocese":"de Vacaria - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Bertilo João Morsch","vinculacao":"Bispo Auxiliar","diocese":"de Porto Alegre - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Darley José Kummer","vinculacao":"Bispo Auxiliar","diocese":"de Porto Alegre - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Juarez Albino Destro, rcj","vinculacao":"Bispo Auxiliar","diocese":"de Porto Alegre - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Odair Miguel Gonsalves dos Santos, CM","vinculacao":"Bispo Auxiliar","diocese":"de Porto Alegre - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Francisco Carlos Bach","vinculacao":"Arcebispo","diocese":"de Joinville - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Odelir José Magri, MCCJ","vinculacao":"Arcebispo","diocese":"de Chapecó - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Wilson Tadeu Jönck, SCJ","vinculacao":"Arcebispo","diocese":"de Florianópolis - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Adalberto Donadelli Junior","vinculacao":"Bispo","diocese":"de Rio do Sul - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Adilson Pedro Busin, CS","vinculacao":"Bispo","diocese":"de Tubarão - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Cleocir Bonetti","vinculacao":"Bispo","diocese":"de Caçador - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Gilson Meurer","vinculacao":"Bispo","diocese":"de Lages - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Jacinto Inácio Flach","vinculacao":"Bispo","diocese":"de Criciúma - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Mário Marquez, OFMCap","vinculacao":"Bispo","diocese":"de Joaçaba - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Rafael Biernaski","vinculacao":"Bispo","diocese":"de Blumenau - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Onécimo Alberton","vinculacao":"Bispo Auxiliar","diocese":"de Florianópolis - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Milton Zonta, SDS","vinculacao":"Bispo Coadjutor","diocese":"de Criciúma - SC","regional":"Sul 4","observacao":""}],"bispos_emeritos":[{"nome":"Dom Eugène Lambert Adrian Rixen","vinculacao":"Bispo Emérito","diocese":"de Goiás - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Osvino José Both","vinculacao":"Bispo Emérito","diocese":"Ordinariato Militar","regional":"Centro-Oeste","observacao":""},{"nome":"Cardeal João Braz de Aviz","vinculacao":"Arcebispo Emérito","diocese":"de Brasilia -DF","regional":"Centro-Oeste","observacao":""},{"nome":"Dom Edney Gouvêa Mattoso","vinculacao":"Bispo  Emérito","diocese":"de Nova Friburgo - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Francesco Biasin","vinculacao":"Bispo Emérito","diocese":"de Barra do Piraí-Volta Redonda - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom José Ubiratan Lopes, OFMCap","vinculacao":"Bispo  Emérito","diocese":"de Itaguaí - RJ","regional":"Leste 1","observacao":""},{"nome":"Dom Esmeraldo Barreto de Farias","vinculacao":"Bispo  Emérito","diocese":"de Araçuaí - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Gil Antônio Moreira","vinculacao":"Arcebispo  Emérito","diocese":"de Juiz de Fora - MG","regional":"Leste 2","observacao":""},{"nome":"Dom Irineu Andreassa, OFM","vinculacao":"Bispo Emérito","diocese":"Ituiutaba - MG","regional":"leste 2","observacao":""},{"nome":"Dom Dario Campos, OFM","vinculacao":"Arcebispo  Emérito","diocese":"de Vitória do Espírito Santo - ES","regional":"Leste 3","observacao":""},{"nome":"Dom Emanuel Messias de Oliveira","vinculacao":"Bispo  Emérito","diocese":"de Caratinga - MG","regional":"Leste 3","observacao":""},{"nome":"Dom Edson de Castro Homem","vinculacao":"Bispo  Emérito","diocese":"de Iguatu - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom José Antônio Aparecido Tosi Marques","vinculacao":"Arcebispo  Emérito","diocese":"de Fortaleza - CE","regional":"Nordeste 1","observacao":""},{"nome":"Dom Bernardino Marchió","vinculacao":"Bispo Emérito","diocese":"Caruaru - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Egidio Bisol","vinculacao":"Bispo  Emérito","diocese":"de Afogados da Ingazeira - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Genival Saraiva de França","vinculacao":"Bispo Emérito","diocese":"de Palmares - PE","regional":"Nordeste 2","observacao":"Quarto individual"},{"nome":"Dom Jaime Vieira Rocha","vinculacao":"Arcebispo Emérito","diocese":"de Natal - RN","regional":"Nordeste 2","observacao":""},{"nome":"Dom José González Alonso","vinculacao":"Bispo  Emérito","diocese":"de Cajazeiras - PB","regional":"Nordeste 2","observacao":"Minha cuidadora me acompanha nas viagens,  poderia ficar hospedada no hotel Rainha dos Apóstolos assumindo seus gastos?Na última Assembleia foi assim. Obrigado."},{"nome":"Dom Manoel dos Reis de Farias","vinculacao":"Bispo Emérito","diocese":"de Petrolina - PE","regional":"Nordeste 2","observacao":""},{"nome":"Dom Armando Bucciol","vinculacao":"Bispo  Emérito","diocese":"de Livramento de Nossa Senhora - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom Carlos Alberto dos Santos","vinculacao":"Bispo Emérito","diocese":"de Itabuna - BA","regional":"Nordeste 3","observacao":"Comunicamos também que chegaremos de LATAM, voo 3387, de JOÃO PESSOA A GUARULHOS, DIA 14 DE  ABRIL, PELAS 6,50H. SDQ"},{"nome":"Dom João Carlos Petrini","vinculacao":"Bispo Emérito","diocese":"de Camaçari - BA","regional":"Nordeste 3","observacao":""},{"nome":"Dom José Palmeira Lessa","vinculacao":"Bispo Emérito","diocese":"de Aracaju - SE","regional":"Nordeste 3","observacao":""},{"nome":"Dom Jacinto Furtado de Brito Sobrinho","vinculacao":"Arcebispo  Emérito","diocese":"de Teresina - PI","regional":"Nordeste 4","observacao":"Como bispo emérito, estarei me unindo ao grupo dos bispos do Norte 1, inclusive na disposição das mesas durante a assembleia geral."},{"nome":"Dom José Belisário da Silva, OFM","vinculacao":"Arcebispo  Emérito","diocese":"de São Luís do Maranhão - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom José Soares Filho, OFMCap","vinculacao":"Bispo  Emérito","diocese":"de Carolina - MA","regional":"Nordeste 5","observacao":""},{"nome":"Dom Ricardo Pedro Paglia, MSC","vinculacao":"Bispo  Emérito","diocese":"de Pinheiro - MA","regional":"Nordeste 5","observacao":"Pela dificuldade em subir escadas, gostaria de hospedar-me no 2º andar, mesmo andar de Dom Élio Rama (Bispo de Pinheiro-MA) e, se possível, em quartos próximos (ao lado ou em frente)."},{"nome":"Dom Edson Tasquetto Damian","vinculacao":"Bispo  Emérito","diocese":"de São Gabriel da Cachoeira - AM","regional":"Norte 1","observacao":""},{"nome":"Dom Alberto Taveira Corrêa","vinculacao":"Arcebispo  Emérito","diocese":"de Belém do Pará - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Carlos Verzeletti","vinculacao":"Bispo Emérito","diocese":"de Castanhal do Pará - PA","regional":"Norte 2","observacao":""},{"nome":"Dom Erwin Kräutler, CPPS","vinculacao":"Bispo Prelado  Emérito","diocese":"de Xingu-Altamira - PA","regional":"Norte 2","observacao":""},{"nome":"Dom  Romualdo Matias Kujawski","vinculacao":"Bispo Emérito","diocese":"de Porto Nacional - TO","regional":"Norte 3","observacao":""},{"nome":"Dom Adriano Ciocca Vasino","vinculacao":"Bispo Prelado  Emérito","diocese":"de São Félix - MT","regional":"Norte 3","observacao":""},{"nome":"Dom Vitório Pavanello, SDB","vinculacao":"Arcebispo Emérito","diocese":"","regional":"Oeste 1","observacao":""},{"nome":"Dom Derek John Christopher Byrne, SPS","vinculacao":"Bispo Emérito","diocese":"de Primavera do Leste - Paranatinga - MT","regional":"Oeste 2","observacao":""},{"nome":"Dom Fernando Mason, OFMConv","vinculacao":"Bispo Emérito","diocese":"de Piracicaba - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Gorgônio Alves da Encarnação Neto, CR","vinculacao":"Bispo Emérito","diocese":"de Itapetininga - SP","regional":"Sul 1","observacao":""},{"nome":"Dom José Luiz Bertanha, SVD","vinculacao":"Bispo Emérito","diocese":"de Registro - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Luiz Antônio Guedes","vinculacao":"Bispo Emérito","diocese":"de Campo Limpo - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Orlando Brandes","vinculacao":"Arcebispo Emérito","diocese":"de Aparecida - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Otacílio Luziano da Silva","vinculacao":"Bispo Emérito","diocese":"de Catanduva - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Tarcísio Scaramussa, SDB","vinculacao":"Bispo Emérito","diocese":"de Santos - SP","regional":"Sul 1","observacao":"Ficarei até o Domingo, 19/04."},{"nome":"Dom Vartan Waldir Boghossian","vinculacao":"Exarca Emérito","diocese":"do Rito Armênio residentes na América Latina e Caribe","regional":"Sul 1","observacao":""},{"nome":"Dom Vicente Costa","vinculacao":"Bispo Emérito","diocese":"de Jundiaí - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Salvador Paruzzo","vinculacao":"Bispo Emérito","diocese":"de Ourinhos - SP","regional":"Sul 1","observacao":""},{"nome":"Cardeal Raymundo Damasceno Assis","vinculacao":"Arcebispo Emérito","diocese":"de Aparecida - SP","regional":"Sul 1","observacao":""},{"nome":"Dom Anuar Battisti","vinculacao":"Arcebispo  Emérito","diocese":"de Maringá - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Manoel João Francisco","vinculacao":"Bispo Emérito","diocese":"de Cornélio Procópio - PR","regional":"Sul 2","observacao":""},{"nome":"Dom Alessandro Carmelo Ruffinoni, CS","vinculacao":"Bispo Emérito","diocese":"Caxias do Sul - RS","regional":"Sul 3","observacao":""},{"nome":"Dom José Mário Stroeher","vinculacao":"Bispo Emérito","diocese":"de Rio Grande - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Paulo Antônio De Conto","vinculacao":"Bispo Emérito","diocese":"de Montenegro - RS","regional":"Sul 3","observacao":""},{"nome":"Dom Guilherme Antônio Werlang, MSF","vinculacao":"Bispo Emérito","diocese":"de Lages - SC","regional":"Sul 4","observacao":""},{"nome":"Dom Antônio Carlos Altieri, SDB","vinculacao":"Arcebispo Emérito","diocese":"de Passo Fundo - RS","regional":"sul 3","observacao":""},{"nome":"Dom Vilson Dias de Oliveira, DC","vinculacao":"Bispo Emérito","diocese":"de Limeira - SP","regional":"Sul 1","observacao":""}],"adm_diocesano":[{"nome":"Pe. Diomar Aparecido de Bastos Xavier","vinculacao":"Administrador Diocesano","diocese":"de Rubiataba-Mozarlândia - GO","regional":"Centro-Oeste","observacao":""},{"nome":"Pe. Wilian Lino Orcesi","vinculacao":"Administrador Diocesano","diocese":"de Guajará-Mirim - RO","regional":"Noroeste","observacao":""},{"nome":"Pe. Antônio Carlos Rodrigues","vinculacao":"Administrador Diocesano","diocese":"de União da Vitória - PR","regional":"Sul 2","observacao":""},{"nome":"Pe. Cássio Roberto Rossette","vinculacao":"Administrador Diocesano","diocese":"de Limeira - SP","regional":"Sul 1","observacao":""},{"nome":"Pe. Pascifal José do Nascimento","vinculacao":"Administrador Diocesano","diocese":"de Itabira-Coronel Fabriciano - MG","regional":"Leste 2","observacao":""}],"instituicoes":[{"nome":"Valquíria Alves Smith Lima","instituicao":"Cáritas Brasileira","observacao":""},{"nome":"Sônia Gomes de Oliveira","instituicao":"CBJP","observacao":""},{"nome":"José Oliveira Cavalcante","instituicao":"CND","observacao":""},{"nome":"Moema Rodrigues Muricy","instituicao":"CNISB","observacao":""},{"nome":"Márcio José de Oliveira","instituicao":"CNLB","observacao":""},{"nome":"Pe. André Luís do Vale","instituicao":"CNP","observacao":""},{"nome":"Pe. Vagner João Pacheco de Moraes","instituicao":"OSIB","observacao":""},{"nome":"Ir. Regina da Costa Pedro","instituicao":"POM","observacao":""},{"nome":"Ir. Maria do Disterro Rocha Santos","instituicao":"CRB","observacao":""},{"nome":"Pe.  Valdir Cândido de Morais","instituicao":"Pio Brasileiro","observacao":"Pe. Valdir (reitor do Pio Brasileiro) fica para o encontro nacional dos presbíteros. Ele fica até o dia 29/04. Assim pode manter ele no mesmo quarto depois da assembleia"},{"nome":"Maria Inês Monteiro de Freitas","instituicao":"Pastoral da Criança","observacao":""},{"nome":"Frei José Francisco de Cássia dos Santos","instituicao":"Pastoral da Criança","observacao":""},{"nome":"Luis Ventura Fernandez","instituicao":"CIMI","observacao":""}],"secretarios":[{"nome":"Ir. Roselei Bertoldo","regional":"Norte  1","observacao":""},{"nome":"Cristiane Araújo de Queiróz","regional":"Norte 2","observacao":""},{"nome":"Pe. Heldeir Gomes Carneiro","regional":"Norte 3","observacao":""},{"nome":"Pe. Francisco Macerlândio Teixeira Gomes","regional":"Nordeste 1","observacao":""},{"nome":"Pe. Agenor Guedes Filho, OSB","regional":"Nordeste 2","observacao":"Preciso que reserve o hotel de 12 a 24 /04, pois tenho compromissos em Aparecida antes da Assembleia Geral"},{"nome":"Maria Inês de Sousa Santos","regional":"Nordeste 3","observacao":""},{"nome":"Pe. Francisco Genival de Sousa","regional":"Nordeste 4","observacao":"Irei chegar no dia 14/04/26 (pela manha)"},{"nome":"Martha Isabel Furtado Bispo","regional":"Nordeste 5","observacao":""},{"nome":"Pe. Jovane da Rosa Carmo","regional":"Leste1","observacao":""},{"nome":"Pe. Rodrigo de Souza da Silva","regional":"Leste 2","observacao":""},{"nome":"Pe. Renato Crister Covre","regional":"Leste 3","observacao":""},{"nome":"Pe. Luis Fernando da Silva","regional":"Sul 1","observacao":""},{"nome":"Pe. Valdecir Badzinski","regional":"Sul 2","observacao":""},{"nome":"Pe.  Rogério Alencar Ferraz de Andrade","regional":"Sul 3","observacao":""},{"nome":"Pe. Antonio Marcos Machado Madeira","regional":"Sul 4","observacao":""},{"nome":"Pe. Eduardo Luiz Rezende, CSsR","regional":"Centro-Oeste","observacao":"Hospedagem em quarto individual de preferência longe do elevador."},{"nome":"Pe. André Márcio Nogueira de Souza","regional":"Oeste 1","observacao":""},{"nome":"Pe. Reinaldo Braga Junior","regional":"Oeste 2","observacao":""},{"nome":"Clemildo Sá","regional":"Noroeste","observacao":""}],"assessores":[{"nome":"Nome","funcao":"FUNÇÃO /COMISSÃO","observacao":"Observação"},{"nome":"Pe. Leandro Megeto","funcao":"Subsecretário-Geral","observacao":"Permanece no hotel ou lar dos redentoristas até o dia 28/04"},{"nome":"Pe. Tiago Ávila Camargo","funcao":"Subsecretário Adjunto de Pastoral","observacao":""},{"nome":"Pe. Felipe Lima Pires","funcao":"Ecônomo","observacao":""},{"nome":"Pe. Jean Poul Hansen","funcao":"Campanhas","observacao":""},{"nome":"Frei Jorge Luiz Soares da Silva, OFMConv","funcao":"Relações Institucionais e Governamentais","observacao":""},{"nome":"Pe. Arnaldo Rodrigues da Silva","funcao":"Imprensa","observacao":""},{"nome":"Frei Alexsandro Rufino, OFM","funcao":"Canônico","observacao":""},{"nome":"Mons. Jamil Alves de Souza","funcao":"EDIÇÕES CNBB","observacao":"Permanece no hotel ou lar dos redentoristas até o dia 28/04"},{"nome":"Pe. Danilo Pinto dos Santos","funcao":"Secretário Executivo","observacao":""},{"nome":"Pe. Antônio Valdeir Duarte de Queiróz","funcao":"Ação Missionária e Cooperação Intereclesial","observacao":""},{"nome":"Ir. Eliane Costa Santana","funcao":"Ação Missionária e Cooperação Intereclesial","observacao":""},{"nome":"Pe. Wagner Francisco de Sousa Carvalho","funcao":"Animação Bíblico-Catequética","observacao":""},{"nome":"Mariana Aparecida Venâncio","funcao":"Animação Bíblico-Catequética","observacao":""},{"nome":"Pe. Guilherme Maia Junior","funcao":"Ministérios Ordenados e Vida Consagrada","observacao":""},{"nome":"Ir. Maristela Ganassini, FSCJ","funcao":"Ministérios Ordenados e Vida Consagrada","observacao":""},{"nome":"Célia Soares de Sousa","funcao":"Laicato","observacao":""},{"nome":"Marilza José Lopes Schuina","funcao":"CEB’s","observacao":""},{"nome":"Jardel Neves Lopes","funcao":"CEFEP","observacao":""},{"nome":"Frei Luis Felipe Carneiro Marques, OFMConv","funcao":"Liturgia","observacao":""},{"nome":"Pe. Jair Oliveira Costa","funcao":"Liturgia / Música","observacao":""},{"nome":"Raquel Tonini Rosenberg","funcao":"Espaço litúrgico e arte Sacra","observacao":""},{"nome":"Pe. Antônio Edson Bantim Oliveira","funcao":"Doutrina da Fé","observacao":""},{"nome":"Pe. Rodolfo Chagas Pinho","funcao":"Vida e Família","observacao":""},{"nome":"Pe. Marcus Barbosa Guimarães","funcao":"Ecumenismo e Diálogo Inter-Religioso","observacao":""},{"nome":"Pe. Júlio César Evangelista Resende","funcao":"Educação","observacao":""},{"nome":"Maria Beatriz Leal da Silva","funcao":"Ensino Religioso","observacao":""},{"nome":"Pe. Luciano da Silva Roberto","funcao":"Cultura","observacao":""},{"nome":"Pe. João Paulo dos Santos Silva","funcao":"Universidade","observacao":""},{"nome":"Maria Irene Lopes dos Santos","funcao":"Amazônia","observacao":""},{"nome":"Pe. Édson André Cunha Thomassim","funcao":"Ação Sociotransformadora","observacao":""},{"nome":"Alessandra Miranda Souza","funcao":"Ação Sociotransformadora","observacao":""},{"nome":"Pe. Tiago José Sibula da Silva","funcao":"Comunicação Social","observacao":""},{"nome":"Osnilda Aparecida Lima","funcao":"Comunicação Social","observacao":""},{"nome":"Pe. Antônio Gomes de Medeiros Filho","funcao":"Juventude","observacao":""},{"nome":"Pe. Antonio Ramos do Prado","funcao":"Juventude","observacao":""}],"convidados":[{"nome":"Ana Cecilia de Oliveira","vinculacao":"ACN - Brasil","observacao":"hospedagem dos dias 21 e 22 de abril"},{"nome":"Guillén Gross","vinculacao":"ACN - Brasil","observacao":"hospedagem dos dias 21 e 22 de abril"},{"nome":"Luis Daniel Vildoso Escalante","vinculacao":"ACN - Brasil","observacao":"hospedagem dos dias 21 e 22 de abril"},{"nome":"Martin Maier, SJ","vinculacao":"Adveniat","observacao":"Chego a São Paulo (Guarulhos) no dia 15 d e abril d e 2026, à s 15h20, n o voo Avianca 185, vindo de Bogotá. A partida está marcada para o dia 21 d e abril de 2026. De São Paulo, partirei às 10h15 para Miami"},{"nome":"Melillo Dinis do Nascimento","vinculacao":"Análise de Conjuntura Eclesial","observacao":""},{"nome":"Pe. Abimar Oliveira de Moraes","vinculacao":"Análise de Conjuntura Eclesial","observacao":""},{"nome":"VERA MARIA BARBOSA COSTA","vinculacao":"Assessoria Júridica","observacao":"Eles chegarão na segunda, dia 20 e permanecem até sexta (24)"},{"nome":"Hugo José Sarubbi Cysneiros de Oliveira","vinculacao":"Assessoria Júridica","observacao":"Eles chegarão na segunda, dia 20 e permanecem até sexta (24)"},{"nome":"Lucas Furtado de Vasconcelos Maia","vinculacao":"Assessoria Júridica","observacao":"Eles chegarão na segunda, dia 20 e permanecem até sexta (24)"},{"nome":"Mateus Gonçalves Borba Assunção","vinculacao":"Assessoria Júridica","observacao":"Eles chegarão na segunda, dia 20 e permanecem até sexta (24)"},{"nome":"Patrícia Espíndola de Lima Teixeira","vinculacao":"Comissão Episcopal para a Juventude","observacao":"Se for possível, gostaria de ficar em quarto de casal para que meu marido possa estar comigo. As despesas dele ficariam por nossa conta. Do dia 20 a 24 de abril."},{"nome":"Dom Corrado Pizziolo","vinculacao":"Nordeste 3","observacao":""},{"nome":"Dom hibault Verny","vinculacao":"Pontíficia Comissão para a Tutela de Menores","observacao":"Irá chegar no dia 12/04 às 6h00 em GRU e o retorno será no dia 17/04 às 14h10 GRU."},{"nome":"Dom Luis Manuel Ali Herrera","vinculacao":"Pontíficia Comissão para a Tutela de Menores","observacao":"Irá chegar no dia 12/04 às 6h00 em GRU e o retorno será no dia 17/04 às 14h10 GRU."},{"nome":"Daniel Fassa Evangelista","vinculacao":"Poticus","observacao":"Ele estará apenas no dia 21/04 e não precisará de hospedagem"},{"nome":"Silvonei José Protz","vinculacao":"Rádio Vaticana","observacao":""},{"nome":"Luiz Philippe","vinculacao":"TST","observacao":"Ele chega em Aparecida no dia 18/04 (pernoite no Hotel). Participa da Reservada no dia 19/04; Buscar no aeroporto no dia 18/04 e levá-lo no dia 19/04"},{"nome":"Pe. Fabiano Schwarck Colares","vinculacao":"Comissão Especial para Tutelas de Menores","observacao":"Ficará apenas nos dias 20/04 à 22/04"},{"nome":"Matheus Borges de Paiva","vinculacao":"Capacita em Rede","observacao":"acesso de Convidados para os dias: 20, 21 e 22/04"},{"nome":"Ana Paula Bernardes da Silva","vinculacao":"Capacita em Rede","observacao":"acesso de Convidados para os dias: 20, 21 e 22/05"},{"nome":"Roberto Camilo Órfão Morais","vinculacao":"Capacita em Rede","observacao":"acesso de Convidados para os dias: 20, 21 e 22/06"},{"nome":"Emilce Cuda","vinculacao":"Pontificia Comissão para a América Latina","observacao":"Chegada em Guarulhos dia 13/04 às 16h55 e retorno do dia 15/04 em horário a definir; Ela irá para Aparecida com o Nuncio que chegará em Guarulhos às 20h."},{"nome":"Dom Giambattista Diquattro","vinculacao":"Núncio Apostólico","observacao":""},{"nome":"Dom Lizardo Estrada Herrera","vinculacao":"Convidado Especial","observacao":""},{"nome":"Rodrigo Ferreira Arantes","vinculacao":"ACN - Brasil","observacao":""},{"nome":"Revmo. Roman Kuhmen","vinculacao":"Igreja Ortodoxa Russa do Patriarcado de Moscou","observacao":"Culto Ecumênico – 21/04"},{"nome":"Sr. Nereg Barberian","vinculacao":"Igreja Apostólica Armênia","observacao":"Culto Ecumênico – 21/04"},{"nome":"Sra. Mayra Amaral","vinculacao":"Grupo Católico Pentecostal","observacao":"Culto Ecumênico – 21/04"},{"nome":"Sra. Anita Sue Wright","vinculacao":"Igreja Presbiteriana","observacao":"Culto Ecumênico – 21/04"},{"nome":"Pastor Marcos Jair Erbeling","vinculacao":"Igreja Evangélica de Confissão Luterana","observacao":"Culto Ecumênico – 21/04"},{"nome":"Pastor Jair Alves","vinculacao":"Igreja Metodista","observacao":"Culto Ecumênico – 21/04"},{"nome":"Prof. Wagner Lopes Sanchez","vinculacao":"CESEEP – Grupo Ecumênico","observacao":"Culto Ecumênico – 21/04"},{"nome":"Sr. Izaias Carneiro","vinculacao":"Missão Somos Um","observacao":"Culto Ecumênico – 21/04"},{"nome":"Pastor Luiz Guatura","vinculacao":"Assembleia de Deus","observacao":"Culto Ecumênico – 21/04"},{"nome":"Pastor Abner Ferreira","vinculacao":"Assembleia de Deus","observacao":"Culto Ecumênico – 21/04"},{"nome":"Rev. Francisco Leite","vinculacao":"Igreja Presbiteriana","observacao":"Culto Ecumênico – 21/04"}],"colaboradores":[{"nome":"Ir. Flávia Luiza Gonçalves, ddp","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"leila carvalho lima","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"RAYANE BANDEIRA PEREIRA","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Luiz Lopes da Silva Júnior","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Fiama Geovana Tonhá da Cunha","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Priscila Medeiros de Oliveira","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Adriano Barbosa palma","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Paulo Augusto Carvalho Cruz","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Larissa Carvalho Batista","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"William Silva Bonfim","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"James Ricardo Leandro","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Tânia Sales de Almeida","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Gilson da Costa Ribeiro","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Bruna Ribeiro dos Santos","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Moisés Araújo do Nascimento","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Tainara Ferreira Patrício","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Kelly Cristina Madelena","funcao":"Colaborador(a) Sede CNBB","observacao":"quero o quarto acima do 2º andar no Hotel"},{"nome":"Marcos ferreira da silva","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Isabela Silva Novaes","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"adriano jorge da silva","funcao":"Colaborador(a) Sede CNBB","observacao":""},{"nome":"Paloma de Oliveira Timo","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Rodrigo Bezerra de Araújo","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Soraia pereira de sousa","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Aurea Ferreira de Brito","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Daniel José Ferreira Mota","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Nathália Lima Pereira","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Lucas Pereira Nunes da Paixão","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Carlos Henrique Reis Oliveira","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Thiago Faccini Paro","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"Alexsandro Ferreira da Silva","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"João Vitor Braz Alves Pereira","funcao":"Colaborador(a) Edições CNBB","observacao":"ida dia 14/04 (terça-feira) - retorno dia 17/04 (sexta-feira)"},{"nome":"Anderson Machado Morais","funcao":"Colaborador(a) Edições CNBB","observacao":""},{"nome":"José Bezerra Luna Filho","funcao":"Colaborador(a) Edições CNBB","observacao":"Irei à AG pela editora para acompanhar o CDIC-BR no evento de 22/04. Assim, irei no dia 20 e retorno no 23."},{"nome":"Adielson Agrelos Silva","funcao":"ASCOM - Leste 1","observacao":""},{"nome":"Jaison Alves da Silva","funcao":"ASCOM - Sul 4","observacao":""},{"nome":"Sara Maria Cardoso Gomes","funcao":"ASCOM - Nordeste 3","observacao":""},{"nome":"Tatiane Soares de Oliveira","funcao":"ASCOM - Leste 2","observacao":""},{"nome":"Talita Alves Barbosa Salgado Rodrigues","funcao":"ASCOM - Centro-Oeste","observacao":""},{"nome":"Karina de Carvalho Nadal","funcao":"ASCOM","observacao":""},{"nome":"Juliana Mastelini Moyses","funcao":"ASCOM","observacao":""},{"nome":"Cássio Chaves","funcao":"ASCOM","observacao":""}],"nao_participam":[{"nome":"Dom Marco Eugênio Galrão Leite de Almeida","vinculacao":"Bispo Auxiliar","diocese":"de São Salvador - BA","regional":"Nordeste 3"},{"nome":"Dom Levi Bonatto","vinculacao":"Bispo Auxiliar","diocese":"de Goiânia- GO","regional":"Centro-oeste"},{"nome":"Dom Maurício Grotto de Camargo","vinculacao":"Arcebispo","diocese":"de Botucatu - SP","regional":"Sul 1"},{"nome":"Thiago De Moliner Eufrásio","vinculacao":"Doutrina da Fé","diocese":"","regional":""},{"nome":"Dom Teodoro Mendes Tavares, CSSp","vinculacao":"Bispo Eleito de Cabo Verde","diocese":"","regional":""}]};
+
+// Labels
+const CAT_LABELS = {bispos_titulares:'Bispos Titulares',bispos_emeritos:'Bispos Eméritos',adm_diocesano:'Adm. Diocesano',instituicoes:'Instituições',secretarios:'Secretários-Exec.',assessores:'Assessores',convidados:'Convidados',colaboradores:'Colaboradores',nao_participam:'Não Participam'};
+const CAT_COLORS = {bispos_titulares:'azul',bispos_emeritos:'verde',adm_diocesano:'amarelo',secretarios:'cinza',assessores:'azul',convidados:'amarelo',colaboradores:'cinza',instituicoes:'verde'};
+
+// State
+let currentCat = 'todos';
+let currentPage = 1;
+const PER_PAGE = 30;
+
+// ─── GOOGLE SHEETS ──────────────────────────
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxNAb6qE8uGpqa_ShcS-GvDrjRnFxMuYuW9gOgCyWk3BiY1shu0HAm2zsHI2awCBq6N/exec';
+let sheetsMode = false; // true when connected to Google Sheets
+
+async function loadFromSheets() {
+  try {
+    const res = await fetch(SHEETS_URL);
+    const json = await res.json();
+    if (json.status === 'ok' && json.data && json.data.length > 0) {
+      // Clear all categories
+      Object.keys(DB).forEach(k => DB[k] = []);
+      const catMap = {
+        'Bispos Titulares':'bispos_titulares','Bispos Eméritos':'bispos_emeritos',
+        'Adm. Diocesano':'adm_diocesano','Instituições':'instituicoes',
+        'Secretários-Exec.':'secretarios','Assessores':'assessores',
+        'Convidados':'convidados','Colaboradores':'colaboradores','Não Participam':'nao_participam'
+      };
+      json.data.forEach(row => {
+        const cat = catMap[row['Categoria']] || 'colaboradores';
+        if (!row['Nome'] || !row['Nome'].trim()) return;
+        DB[cat].push({
+          nome: row['Nome'] || '',
+          vinculacao: row['Vinculação/Função'] || '',
+          funcao: row['Vinculação/Função'] || '',
+          instituicao: row['Diocese/Instituição'] || '',
+          diocese: row['Diocese/Instituição'] || '',
+          regional: row['Regional'] || '',
+          observacao: row['Observação'] || ''
+        });
+      });
+      sheetsMode = true;
+      updateHeaderCounts();
+      renderSidebar();
+      renderDashboard();
+      showSheetsStatus('✅ Conectado ao Google Sheets — ' + json.data.length + ' participantes carregados', 'verde');
+      return true;
+    }
+  } catch(e) {
+    showSheetsStatus('⚠️ Usando dados locais (sem conexão com Google Sheets)', 'amarelo');
+  }
+  return false;
+}
+
+async function saveToSheets(item, cat) {
+  if (!sheetsMode) return false;
+  const CAT_LABELS_INV = {
+    bispos_titulares:'Bispos Titulares', bispos_emeritos:'Bispos Eméritos',
+    adm_diocesano:'Adm. Diocesano', instituicoes:'Instituições',
+    secretarios:'Secretários-Exec.', assessores:'Assessores',
+    convidados:'Convidados', colaboradores:'Colaboradores', nao_participam:'Não Participam'
+  };
+  try {
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'add',
+        nome: item.nome,
+        categoria: CAT_LABELS_INV[cat] || cat,
+        vinculacao: item.vinculacao || item.funcao || '',
+        diocese: item.diocese || item.instituicao || '',
+        regional: item.regional || '',
+        observacao: item.observacao || ''
+      })
+    });
+    return true;
+  } catch(e) { return false; }
+}
+
+async function deleteFromSheets(nome, cat) {
+  if (!sheetsMode) return false;
+  const CAT_LABELS_INV = {
+    bispos_titulares:'Bispos Titulares', bispos_emeritos:'Bispos Eméritos',
+    adm_diocesano:'Adm. Diocesano', instituicoes:'Instituições',
+    secretarios:'Secretários-Exec.', assessores:'Assessores',
+    convidados:'Convidados', colaboradores:'Colaboradores', nao_participam:'Não Participam'
+  };
+  try {
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'delete', nome, categoria: CAT_LABELS_INV[cat] || cat })
+    });
+    return true;
+  } catch(e) { return false; }
+}
+
+function showSheetsStatus(msg, tipo) {
+  let bar = document.getElementById('sheets-status');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'sheets-status';
+    bar.style.cssText = 'position:fixed;bottom:16px;right:16px;padding:10px 16px;border-radius:10px;font-size:.78rem;font-weight:600;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);transition:opacity .5s;font-family:Montserrat,sans-serif';
+    document.body.appendChild(bar);
+  }
+  const colors = { verde:'background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7', amarelo:'background:#FEF3C7;color:#92400E;border:1px solid #FCD34D', vermelho:'background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5' };
+  bar.style.cssText += ';' + (colors[tipo]||colors.amarelo);
+  bar.innerHTML = msg;
+  setTimeout(() => { bar.style.opacity='0'; setTimeout(()=>bar.remove(),500); }, 4000);
+}
+
+// ─── COUNTS ────────────────────────────────
+function getAll() {
+  return Object.entries(DB).filter(([k])=>k!=='nao_participam').flatMap(([cat,arr])=>arr.map(i=>({...i,_cat:cat})));
+}
+function getFiltered(cat, reg='', q='') {
+  let arr = cat==='todos' ? getAll() : (DB[cat]||[]).map(i=>({...i,_cat:cat}));
+  if(reg) arr = arr.filter(i=>(i.regional||'').toLowerCase().includes(reg.toLowerCase()));
+  if(q) arr = arr.filter(i=>i.nome.toLowerCase().includes(q.toLowerCase())||(i.diocese||'').toLowerCase().includes(q.toLowerCase())||(i.regional||'').toLowerCase().includes(q.toLowerCase()));
+  return arr;
+}
+
+function updateHeaderCounts() {
+  const all = getAll();
+  const bispos = (DB.bispos_titulares.length + DB.bispos_emeritos.length);
+  document.getElementById('total-count').textContent = all.length;
+  document.getElementById('bispos-count').textContent = bispos;
+  document.getElementById('side-count').textContent = `${all.length} participantes registrados`;
+}
+
+// ─── SIDEBAR ────────────────────────────────
+function renderSidebar() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const arr = getFiltered(currentCat,'',q);
+  const list = document.getElementById('side-list');
+  list.innerHTML = arr.slice(0,100).map(item => {
+    const lbl = CAT_LABELS[item._cat]||item._cat;
+    const col = CAT_COLORS[item._cat]||'cinza';
+    return `<div class="list-item" onclick="showDetail(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+      <div class="name">${item.nome.trim()}</div>
+      <div class="sub">${item.diocese||item.funcao||item.instituicao||item.regional||''}</div>
+      <span class="tag badge badge-${col}">${lbl}</span>
+    </div>`;
+  }).join('') + (arr.length > 100 ? `<div style="text-align:center;padding:10px;font-size:.75rem;color:var(--cinza)">+${arr.length-100} mais resultados…</div>` : '');
+}
+function filterList() { renderSidebar(); }
+function setCategory(cat,el) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderSidebar();
+}
+
+// ─── DETAIL PANEL ────────────────────────────
+function showDetail(item) {
+  document.getElementById('dp-name').textContent = item.nome.trim();
+  document.getElementById('dp-role').textContent = item.vinculacao||item.funcao||item.instituicao||'';
+  document.getElementById('dp-diocese').textContent = item.diocese||item.instituicao||'—';
+  document.getElementById('dp-reg').textContent = item.regional||'—';
+  document.getElementById('dp-cat').textContent = CAT_LABELS[item._cat]||item._cat;
+  const obsF = document.getElementById('dp-obs-field');
+  if(item.observacao && item.observacao.trim()) {
+    obsF.style.display='block';
+    document.getElementById('dp-obs').textContent = item.observacao;
+  } else { obsF.style.display='none'; }
+  document.getElementById('detail-panel').classList.add('open');
+}
+function closeDetail() { document.getElementById('detail-panel').classList.remove('open'); }
+
+// ─── VIEWS ────────────────────────────────────
+function switchView(id, el) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(id==='inscritos') renderTable();
+  if(id==='relatorio') renderRelatorio();
+  if(id==='dashboard') renderDashboard();
+}
+
+// ─── DASHBOARD ────────────────────────────────
+function renderDashboard() {
+  // Stats
+  const cats = Object.entries(DB).filter(([k])=>k!=='nao_participam');
+  const statsEl = document.getElementById('stats-grid');
+  const colors = ['azul','verde','amarelo','menta','azul','verde','amarelo','menta','azul'];
+  statsEl.innerHTML = [
+    {l:'Total de Participantes', n: getAll().length, c:'azul'},
+    {l:'Bispos Titulares', n: DB.bispos_titulares.length, c:'verde'},
+    {l:'Bispos Eméritos', n: DB.bispos_emeritos.length, c:'amarelo'},
+    {l:'Assessores', n: DB.assessores.length, c:'azul'},
+    {l:'Colaboradores', n: DB.colaboradores.length, c:'verde'},
+    {l:'Secretários-Exec.', n: DB.secretarios.length, c:'amarelo'},
+    {l:'Convidados', n: DB.convidados.length, c:'azul'},
+    {l:'Instituições', n: DB.instituicoes.length, c:'verde'},
+    {l:'Adm. Diocesano', n: DB.adm_diocesano.length, c:'amarelo'},
+  ].map(s=>`<div class="stat-card ${s.c}"><div class="s-num">${s.n}</div><div class="s-lbl">${s.l}</div></div>`).join('');
+
+  // Regional chart — Titulares + Eméritos
+  const regionais = {};
+  DB.bispos_titulares.forEach(b=>{const r=b.regional||'N/A'; if(!regionais[r]) regionais[r]={t:0,e:0}; regionais[r].t++;});
+  DB.bispos_emeritos.forEach(b=>{const r=b.regional||'N/A'; if(!regionais[r]) regionais[r]={t:0,e:0}; regionais[r].e++;});
+  const sorted = Object.entries(regionais).map(([r,v])=>([r, v.t+v.e, v.t, v.e])).sort((a,b)=>b[1]-a[1]);
+  const maxR = sorted[0]?.[1]||1;
+  const barColors = ['#1A5EA8','#3D7048','#0D2E1A','#1A5EA8','#3D7048'];
+  document.getElementById('chart-regional').innerHTML = sorted.map(([r,total,t,e],i)=>`
+    <div class="bar-row">
+      <div class="bar-label">${r}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(total/maxR)*100}%;background:${barColors[i%5]}">${total}</div></div>
+      <div class="bar-count" title="${t} Titulares · ${e} Eméritos">${total}</div>
+    </div>`).join('');
+
+  // Cat chart
+  const catData = cats.map(([k,v])=>({l:CAT_LABELS[k],n:v.length})).sort((a,b)=>b.n-a.n);
+  const maxC = catData[0]?.n||1;
+  document.getElementById('chart-cat').innerHTML = catData.map(({l,n},i)=>`
+    <div class="bar-row">
+      <div class="bar-label">${l}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(n/maxC)*100}%;background:${barColors[i%5]}">${n}</div></div>
+      <div class="bar-count">${n}</div>
+    </div>`).join('');
+
+  // Obs table
+  const allObs = getAll().filter(i=>i.observacao && i.observacao.trim());
+  document.getElementById('obs-body').innerHTML = allObs.slice(0,20).map(i=>`<tr>
+    <td><strong>${i.nome.trim()}</strong></td>
+    <td><span class="badge badge-${CAT_COLORS[i._cat]||'cinza'}">${CAT_LABELS[i._cat]||i._cat}</span></td>
+    <td><span class="obs-text" title="${i.observacao}">${i.observacao}</span></td>
+  </tr>`).join('');
+}
+
+// ─── TABLE ────────────────────────────────────
+function renderTable() {
+  const cat = document.getElementById('cat-filter').value;
+  const reg = document.getElementById('reg-filter').value;
+  const arr = getFiltered(cat, reg);
+  currentPage = 1;
+  const total = arr.length;
+  document.getElementById('table-title').textContent = cat==='todos' ? 'Todos os inscritos' : CAT_LABELS[cat]||cat;
+  document.getElementById('table-count').textContent = `${total} registros`;
+  renderPage(arr);
+
+  // Populate regional filter
+  const regs = [...new Set(getAll().map(i=>i.regional||'').filter(Boolean))].sort();
+  const regSel = document.getElementById('reg-filter');
+  const curReg = regSel.value;
+  regSel.innerHTML = '<option value="">Todos os regionais</option>' + regs.map(r=>`<option value="${r}" ${r===curReg?'selected':''}>${r}</option>`).join('');
+}
+function renderPage(arr) {
+  const start = (currentPage-1)*PER_PAGE;
+  const page = arr.slice(start, start+PER_PAGE);
+  document.getElementById('main-tbody').innerHTML = page.map((item,i)=>`<tr onclick="showDetail(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+    <td style="color:var(--cinza)">${start+i+1}</td>
+    <td><strong>${item.nome.trim()}</strong></td>
+    <td>${item.vinculacao||item.funcao||item.instituicao||'—'}</td>
+    <td style="max-width:180px">${item.diocese||item.instituicao||item.regional||'—'}</td>
+    <td>${item.regional||'—'}</td>
+    <td><span class="obs-text" title="${item.observacao||''}">${item.observacao ? '⚠️ '+item.observacao.substring(0,40)+'…' : '—'}</span></td>
+  </tr>`).join('');
+
+  // Pagination
+  const totalPages = Math.ceil(arr.length/PER_PAGE);
+  let pag = `<span class="page-info">Página ${currentPage} de ${totalPages} (${arr.length} registros)</span>`;
+  pag += `<button class="page-btn" onclick="goPage(-1)" ${currentPage<=1?'disabled':''}>‹ Anterior</button>`;
+  for(let p=Math.max(1,currentPage-2);p<=Math.min(totalPages,currentPage+2);p++) {
+    pag += `<button class="page-btn ${p===currentPage?'active':''}" onclick="setPage(${p})">${p}</button>`;
+  }
+  pag += `<button class="page-btn" onclick="goPage(1)" ${currentPage>=totalPages?'disabled':''}>Próxima ›</button>`;
+  document.getElementById('pagination').innerHTML = pag;
+  window._tableArr = arr;
+}
+function goPage(d) { currentPage+=d; renderPage(window._tableArr); }
+function setPage(p) { currentPage=p; renderPage(window._tableArr); }
+
+// ─── RELATÓRIO ────────────────────────────────
+function renderRelatorio() {
+  const all = getAll();
+  document.getElementById('rel-stats').innerHTML = [
+    {l:'Total Geral',n:all.length,c:'azul'},{l:'Bispos Titulares',n:DB.bispos_titulares.length,c:'verde'},
+    {l:'Com Observações',n:all.filter(i=>i.observacao&&i.observacao.trim()).length,c:'amarelo'},
+    {l:'Não Participarão',n:DB.nao_participam.length,c:'azul'},
+  ].map(s=>`<div class="stat-card ${s.c}"><div class="s-num">${s.n}</div><div class="s-lbl">${s.l}</div></div>`).join('');
+
+  // Regional — Titulares + Eméritos
+  const regionaisRel = {};
+  DB.bispos_titulares.forEach(b=>{const r=b.regional||'N/A'; if(!regionaisRel[r]) regionaisRel[r]={t:0,e:0}; regionaisRel[r].t++;});
+  DB.bispos_emeritos.forEach(b=>{const r=b.regional||'N/A'; if(!regionaisRel[r]) regionaisRel[r]={t:0,e:0}; regionaisRel[r].e++;});
+  const sortedRel = Object.entries(regionaisRel).map(([r,v])=>([r, v.t+v.e, v.t, v.e])).sort((a,b)=>b[1]-a[1]);
+  const maxR = sortedRel[0]?.[1]||1;
+  document.getElementById('rel-chart-reg').innerHTML = sortedRel.map(([r,total,t,e])=>`
+    <div class="bar-row"><div class="bar-label">${r}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(total/maxR)*100}%;background:var(--azul)">${total}</div></div>
+    <div class="bar-count" title="${t} Titulares · ${e} Eméritos">${total}</div></div>`).join('');
+
+  // Funções
+  const funcs = {};
+  DB.bispos_titulares.forEach(b=>{const f=b.vinculacao||'Outro';funcs[f]=(funcs[f]||0)+1;});
+  const sfuncs = Object.entries(funcs).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxF = sfuncs[0]?.[1]||1;
+  document.getElementById('rel-chart-func').innerHTML = sfuncs.map(([f,n])=>`
+    <div class="bar-row"><div class="bar-label">${f}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(n/maxF)*100}%;background:var(--verde-medio)">${n}</div></div>
+    <div class="bar-count">${n}</div></div>`).join('');
+}
+
+// ─── EXPORT ────────────────────────────────────
+function exportExcel(type) {
+  type = type || document.getElementById('cat-filter')?.value || 'todos';
+  let rows, title;
+  if(type==='obs') {
+    rows = getAll().filter(i=>i.observacao&&i.observacao.trim());
+    title = 'Com_Observacoes';
+  } else if(type==='todos') {
+    rows = getAll();
+    title = 'Todos_Participantes';
+  } else {
+    rows = (DB[type]||[]).map(i=>({...i,_cat:type}));
+    title = CAT_LABELS[type]||type;
+  }
+
+  const header = ['Nome','Vinculação/Função','Diocese/Instituição','Regional','Categoria','Observação'];
+  const csvRows = rows.map(r=>[
+    r.nome?.trim()||'', r.vinculacao||r.funcao||r.instituicao||'',
+    r.diocese||r.instituicao||'', r.regional||'',
+    CAT_LABELS[r._cat]||r._cat||'', r.observacao||''
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+
+  const csv = '\uFEFF' + [header.join(','), ...csvRows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `62AG_${title}_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+}
+
+// ─── ADD MODAL ─────────────────────────────────
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
+async function saveNewItem() {
+  const nome = document.getElementById('f-nome').value.trim();
+  if(!nome) return alert('Por favor, informe o nome.');
+  const cat = document.getElementById('f-cat').value;
+  const item = {
+    nome, vinculacao:document.getElementById('f-vinc').value,
+    diocese:document.getElementById('f-diocese').value, funcao:document.getElementById('f-vinc').value,
+    regional:document.getElementById('f-reg').value, observacao:document.getElementById('f-obs').value,
+    instituicao:document.getElementById('f-diocese').value
+  };
+  if(!DB[cat]) DB[cat]=[];
+  DB[cat].push(item);
+  closeAddModal();
+  updateHeaderCounts();
+  renderSidebar();
+  renderTable();
+  ['f-nome','f-vinc','f-diocese','f-obs'].forEach(id=>document.getElementById(id).value='');
+  // Save to Google Sheets
+  const saved = await saveToSheets(item, cat);
+  if(saved) {
+    showSheetsStatus(`✅ "${nome}" salvo no Google Sheets!`, 'verde');
+  } else if(sheetsMode) {
+    showSheetsStatus(`⚠️ Salvo localmente. Erro ao salvar no Sheets.`, 'amarelo');
+  } else {
+    showSheetsStatus(`✅ "${nome}" adicionado! Total: ${getAll().length}`, 'verde');
+  }
+}
+
+// ─── AVISOS ────────────────────────────────────
+async function gerarAviso() {
+  const tipo = document.getElementById('aviso-tipo').value;
+  const dest = document.getElementById('aviso-dest').value;
+  const instr = document.getElementById('aviso-instrucoes').value;
+  const btn = document.getElementById('btn-gerar');
+  btn.disabled = true;
+  document.getElementById('aviso-typing').style.display='flex';
+  document.getElementById('aviso-output').textContent = '';
+
+  const tipoMap = {
+    confirmacao:'confirmação de inscrição para a 62ª Assembleia Geral',
+    lembrete:'lembrete de chegada e credenciamento',
+    programacao:'envio da programação geral do evento',
+    translado:'informações sobre translado aeroporto-Aparecida',
+    hospedagem:'confirmação de hospedagem no Hotel Rainha dos Apóstolos',
+    livre:'aviso geral'
+  };
+
+  const prompt = `Você é secretário(a) da CNBB para a 62ª Assembleia Geral dos Bispos do Brasil.
+Redija um aviso/comunicado formal e respeitoso do tipo: ${tipoMap[tipo]||tipo}.
+${dest ? `Destinatário: ${dest}.` : 'Destinatário: participantes em geral.'}
+Evento: 62ª Assembleia Geral dos Bispos do Brasil, 15 a 24 de abril de 2026, Aparecida-SP.
+Instruções adicionais: ${instr||'Nenhuma.'}.
+O texto deve ser formal, breve, com saudação adequada e assinatura da Secretaria CNBB.
+Use formatação de carta/comunicado eclesiástico.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text||'Erro ao gerar aviso.';
+    document.getElementById('aviso-output').innerHTML = text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  } catch(e) {
+    document.getElementById('aviso-output').textContent = 'Erro de conexão. Tente novamente.';
+  }
+  btn.disabled = false;
+  document.getElementById('aviso-typing').style.display='none';
+}
+function loadTemplate(t) {
+  const templates = {
+    chegada:`<strong>CREDENCIAMENTO – 62ª ASSEMBLEIA GERAL</strong><br><br>Prezado(a) participante,<br><br>Informamos que o credenciamento da 62ª Assembleia Geral dos Bispos do Brasil ocorrerá nos dias <strong>15 de abril de 2026 (a partir das 14h)</strong> no Hall Principal do Centro de Convenções do Santuário Nacional de Aparecida.<br><br>Pedimos que compareçam munidos do documento de identidade. A equipe de secretaria estará à disposição para quaisquer esclarecimentos.<br><br>Fraternalmente,<br><em>Secretaria da 62ª Assembleia Geral – CNBB</em>`,
+    translado:`<strong>TRANSLADO – GUARULHOS / APARECIDA</strong><br><br>Prezado(a) participante,<br><br>Informamos que os ônibus de translado partirão do Aeroporto Internacional de Guarulhos (ponto de encontro: saída do Terminal 2) nos horários de <strong>10h00, 14h00 e 18h00</strong>.<br><br>Para o retorno, os ônibus partirão de Aparecida às <strong>14h00 do dia 24 de abril de 2026</strong>. Participantes com horários diferentes de voo devem informar à secretaria com antecedência.<br><br>Fraternalmente,<br><em>Secretaria da 62ª Assembleia Geral – CNBB</em>`,
+    hospedagem:`<strong>HOSPEDAGEM – HOTEL RAINHA DOS APÓSTOLOS</strong><br><br>Prezado(a) participante,<br><br>Confirmamos a reserva de hospedagem no <strong>Hotel Rainha dos Apóstolos</strong>, em Aparecida-SP, para os dias da 62ª Assembleia Geral (15/04 a 24/04/2026).<br><br>O check-in está previsto para o dia 14 de abril a partir das 14h. Qualquer necessidade especial de acomodação (quarto individual, andar específico, acessibilidade) deve ser comunicada à secretaria com urgência.<br><br>Fraternalmente,<br><em>Secretaria da 62ª Assembleia Geral – CNBB</em>`,
+    programacao:`<strong>PROGRAMAÇÃO – 62ª ASSEMBLEIA GERAL</strong><br><br>Prezado(a) participante,<br><br>Encaminhamos em anexo a programação completa da 62ª Assembleia Geral dos Bispos do Brasil, que se realizará de <strong>15 a 24 de abril de 2026</strong>, no Santuário Nacional de Aparecida – SP.<br><br>Solicitamos que confirme seu credenciamento junto à secretaria até o dia 10 de abril. Quaisquer alterações na programação serão comunicadas com antecedência.<br><br>Fraternalmente,<br><em>Secretaria da 62ª Assembleia Geral – CNBB</em>`
+  };
+  document.getElementById('aviso-output').innerHTML = templates[t]||'';
+}
+function copyAviso() {
+  const text = document.getElementById('aviso-output').innerText;
+  navigator.clipboard.writeText(text).then(()=>alert('Aviso copiado para a área de transferência!'));
+}
+function clearAviso() { document.getElementById('aviso-output').innerHTML=''; }
+
+// ─── CHAT ────────────────────────────────────────
+const CHIPS = ['📊 Total de inscritos','🏅 Bispos com observações','📍 Regionais com mais bispos','✈️ Bispos aguardando translado','🏨 Pedidos de quarto individual','📋 Resumo geral'];
+
+function addMsg(html, who) {
+  const div = document.createElement('div');
+  div.className = 'msg '+who;
+  div.innerHTML = `<div class="av ${who}">${who==='ai'?'✦':'Eu'}</div><div class="bubble">${html}</div>`;
+  document.getElementById('chat-msgs').appendChild(div);
+  document.getElementById('chat-msgs').scrollTop = 99999;
+  return div;
+}
+function showTyping() {
+  return addMsg('<div class="typing"><span></span><span></span><span></span></div>','ai');
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('msg-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = ''; autoResize(inp);
+  document.getElementById('send-btn').disabled = true;
+  addMsg(text,'user');
+  const td = showTyping();
+
+  const all = getAll();
+  const comObs = all.filter(i=>i.observacao&&i.observacao.trim()).length;
+  const regionais = {};
+  DB.bispos_titulares.forEach(b=>{const r=b.regional||'N/A';regionais[r]=(regionais[r]||0)+1;});
+
+  const sys = `Você é a assistente virtual da Secretaria da 62ª Assembleia Geral dos Bispos do Brasil (CNBB). Responda em português, tom formal e acolhedor.
+
+DADOS ATUAIS:
+- Total de participantes: ${all.length}
+- Bispos Titulares: ${DB.bispos_titulares.length}
+- Bispos Eméritos: ${DB.bispos_emeritos.length}
+- Assessores: ${DB.assessores.length}
+- Colaboradores: ${DB.colaboradores.length}
+- Secretários-Exec.: ${DB.secretarios.length}
+- Convidados: ${DB.convidados.length}
+- Instituições: ${DB.instituicoes.length}
+- Adm. Diocesano: ${DB.adm_diocesano.length}
+- Com observações especiais: ${comObs}
+- Por regional (Titulares): ${JSON.stringify(regionais)}
+- Não participarão: ${DB.nao_participam.length}
+- Evento: 15/04 a 24/04/2026, Aparecida-SP
+
+Responda de forma sucinta e precisa. Use negrito para dados importantes.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:sys,messages:[{role:'user',content:text}]})
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text||'Desculpe, não consegui processar.';
+    td.querySelector('.bubble').innerHTML = reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  } catch(e) {
+    td.querySelector('.bubble').textContent = '⚠️ Erro de conexão.';
+  }
+  document.getElementById('send-btn').disabled=false;
+  document.getElementById('chat-msgs').scrollTop=99999;
+}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+// ─── INIT ──────────────────────────────────────
+window.onload = async () => {
+  updateHeaderCounts();
+  renderSidebar();
+  renderDashboard();
+  // Try to load from Google Sheets
+  showSheetsStatus('🔄 Conectando ao Google Sheets…', 'amarelo');
+  await loadFromSheets();
+
+  // Chips
+  document.getElementById('chips').innerHTML = CHIPS.map(c=>`<div class="chip" onclick="document.getElementById('msg-input').value='${c.replace(/'/g,"\\'")}';sendMsg()">${c}</div>`).join('');
+
+  // Welcome msg
+  addMsg(`Bem-vindo(a) ao sistema de gestão da <strong>62ª Assembleia Geral dos Bispos do Brasil</strong>!<br><br>
+Dados carregados: <strong>${getAll().length} participantes</strong> em ${Object.keys(DB).filter(k=>k!=='nao_participam').length} categorias.<br><br>
+Posso ajudar com estatísticas, busca de participantes, observações especiais e geração de avisos. Como posso ajudar?`,'ai');
+};
+</script>
+</body>
+</html>
